@@ -31,7 +31,7 @@ const changeState = (state = initialState, { type, ...rest }) => {
         auth: {
           ...state.auth,
           isAuthenticated: true,
-          user: rest.user,
+          user: rest.user || rest.response?.user,
           loading: false,
           error: null,
         },

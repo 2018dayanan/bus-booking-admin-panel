@@ -7,6 +7,10 @@ const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, loading } = useSelector((state) => state.auth)
   const location = useLocation()
 
+  const token = localStorage.getItem('authToken')
+  console.log('ProtectedRoute: isAuthenticated', isAuthenticated)
+  console.log('ProtectedRoute: token in localStorage', token)
+
   // Show loading spinner while checking authentication
   if (loading) {
     return (
@@ -16,9 +20,9 @@ const ProtectedRoute = ({ children }) => {
     )
   }
 
-  // Redirect to login if not authenticated
-  if (!isAuthenticated) {
-    return <Navigate to="/login" state={{ from: location }} replace />
+  // Fallback: If no token in localStorage, treat as not authenticated
+  if (!isAuthenticated || !token) {
+    return <Navigate to="/admin/login" state={{ from: location }} replace />
   }
 
   // Render children if authenticated

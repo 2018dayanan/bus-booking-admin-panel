@@ -1,5 +1,6 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
+import React, { useState } from 'react'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
 import {
   CButton,
   CCard,
@@ -12,11 +13,85 @@ import {
   CInputGroup,
   CInputGroupText,
   CRow,
+  CAlert,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { cilLockLocked, cilUser } from '@coreui/icons'
+import authService from '../../../services/authService'
+import LoginDebug from '../../../components/LoginDebug'
 
 const Login = () => {
+  const [credentials, setCredentials] = useState({
+    username: '',
+    password: '',
+  })
+  const [formErrors, setFormErrors] = useState({})
+  
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+  const location = useLocation()
+  
+  const { loading, error } = useSelector((state) => state.auth)
+
+  // Get the page user was trying to access
+  const from = location.state?.from?.pathname || '/admin/dashboard'
+
+  const validateForm = () => {
+    const errors = {}
+    if (!credentials.username.trim()) {
+      errors.username = 'Email or Phone is required'
+    }
+    if (!credentials.password.trim()) {
+      errors.password = 'Password is required'
+    }
+    return errors
+  }
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target
+    setCredentials(prev => ({
+      ...prev,
+      [name]: value
+    }))
+    
+    // Clear error when user starts typing
+    if (formErrors[name]) {
+      setFormErrors(prev => ({
+        ...prev,
+        [name]: ''
+      }))
+    }
+  }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    
+    // Validate form
+    const errors = validateForm()
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors)
+      return
+    }
+
+    try {
+      dispatch({ type: 'LOGIN_START' })
+      
+      const response = await authService.login(credentials)
+      
+      dispatch({ 
+        type: 'LOGIN_SUCCESS', 
+        response: response // Pass the complete response
+      })
+      
+      navigate(from, { replace: true })
+    } catch (error) {
+      dispatch({ 
+        type: 'LOGIN_FAILURE', 
+        error: error.message || 'Login failed. Please try again.' 
+      })
+    }
+  }
+
   return (
     <div className="bg-body-tertiary min-vh-100 d-flex flex-row align-items-center">
       <CContainer>
@@ -25,29 +100,56 @@ const Login = () => {
             <CCardGroup>
               <CCard className="p-4">
                 <CCardBody>
-                  <CForm>
+                  <CForm onSubmit={handleSubmit}>
                     <h1>Login</h1>
                     <p className="text-body-secondary">Sign In to your account</p>
+                    
+                    {error && (
+                      <CAlert color="danger" className="mb-3">
+                        {error}
+                      </CAlert>
+                    )}
+                    
                     <CInputGroup className="mb-3">
                       <CInputGroupText>
                         <CIcon icon={cilUser} />
                       </CInputGroupText>
-                      <CFormInput placeholder="Username" autoComplete="username" />
+                      <CFormInput
+                        name="username"
+                        placeholder="Email or Phone"
+                        autoComplete="username"
+                        value={credentials.username}
+                        onChange={handleInputChange}
+                        invalid={!!formErrors.username}
+                        feedback={formErrors.username}
+                      />
                     </CInputGroup>
+                    
                     <CInputGroup className="mb-4">
                       <CInputGroupText>
                         <CIcon icon={cilLockLocked} />
                       </CInputGroupText>
                       <CFormInput
+                        name="password"
                         type="password"
                         placeholder="Password"
                         autoComplete="current-password"
+                        value={credentials.password}
+                        onChange={handleInputChange}
+                        invalid={!!formErrors.password}
+                        feedback={formErrors.password}
                       />
                     </CInputGroup>
+                    
                     <CRow>
                       <CCol xs={6}>
-                        <CButton color="primary" className="px-4">
-                          Login
+                        <CButton 
+                          color="primary" 
+                          className="px-4" 
+                          type="submit"
+                          disabled={loading}
+                        >
+                          {loading ? 'Logging in...' : 'Login'}
                         </CButton>
                       </CCol>
                       <CCol xs={6} className="text-right">
@@ -78,6 +180,13 @@ const Login = () => {
             </CCardGroup>
           </CCol>
         </CRow>
+        
+        {/* Debug Panel - Remove this after testing */}
+        {/* <CRow className="justify-content-center mt-4">
+          <CCol md={8}>
+            <LoginDebug />
+          </CCol>
+        </CRow> */}
       </CContainer>
     </div>
   )
