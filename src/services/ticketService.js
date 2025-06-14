@@ -82,10 +82,23 @@ class TicketService {
   // Update ticket
   async updateTicket(ticketId, ticketData) {
     try {
-      const response = await apiClient.put(`/admin/tickets/${ticketId}`, ticketData)
+      console.log('Updating ticket with ID:', ticketId)
+      console.log('Update data:', ticketData)
+      console.log('API URL:', `${API_BASE_URL}/ticket/updateTicket`)
+      
+      const response = await apiClient.patch('/ticket/updateTicket', {
+        ticketId: ticketId,
+        ...ticketData
+      })
+      console.log('Ticket updated successfully:', response)
       return response
     } catch (error) {
       console.error('Error updating ticket:', error)
+      if (error.response) {
+        console.error('Response status:', error.response.status)
+        console.error('Response data:', error.response.data)
+        console.error('Response headers:', error.response.headers)
+      }
       throw error
     }
   }

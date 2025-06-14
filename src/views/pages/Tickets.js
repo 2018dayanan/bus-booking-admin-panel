@@ -169,7 +169,9 @@ const Tickets = () => {
           setShowModal(true);
           break;
         case 'edit':
-          alert(`Edit ticket ${ticket.bussName}`);
+          navigate(`/admin/tickets/edit/${ticket._id}`, {
+            state: { ticketData: ticket }
+          });
           break;
         case 'delete':
           if (window.confirm(`Are you sure you want to delete ${ticket.bussName}?`)) {
