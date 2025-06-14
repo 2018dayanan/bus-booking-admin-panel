@@ -1,8 +1,9 @@
 import React from 'react'
 
 const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
-const Dashboard2 = React.lazy(() => import('./views/dashboard/Dashboard2'))
 const Profile = React.lazy(() => import('./views/pages/Profile'))
+const Tickets = React.lazy(() => import('./views/pages/Tickets'))
+const TicketDetail = React.lazy(() => import('./views/pages/TicketDetail'))
 const Colors = React.lazy(() => import('./views/theme/colors/Colors'))
 const Typography = React.lazy(() => import('./views/theme/typography/Typography'))
 
@@ -58,8 +59,9 @@ const Users = React.lazy(() => import('./views/pages/Users'))
 const routes = [
   { path: '/admin', exact: true, name: 'Home' },
   { path: '/dashboard', name: 'Dashboard', element: Dashboard },
-  { path: '/admin/profile', name: 'Profile', element: Profile },
-  { path: '/admin/dashboard2', name: 'Dashboard2', element: Dashboard2 },
+  { path: '/profile', name: 'Profile', element: Profile },
+  { path: '/tickets', name: 'Tickets', element: Tickets },
+  { path: '/tickets/:id', name: 'Ticket Detail', element: TicketDetail },
   { path: '/admin/theme', name: 'Theme', element: Colors, exact: true },
   { path: '/admin/theme/colors', name: 'Colors', element: Colors },
   { path: '/admin/theme/typography', name: 'Typography', element: Typography },
