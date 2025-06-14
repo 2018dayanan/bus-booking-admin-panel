@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import {
@@ -14,6 +14,7 @@ import {
   CInputGroupText,
   CRow,
   CAlert,
+  CSpinner,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { cilLockLocked, cilUser } from '@coreui/icons'
@@ -26,15 +27,62 @@ const Login = () => {
     password: '',
   })
   const [formErrors, setFormErrors] = useState({})
+  const [checkingAuth, setCheckingAuth] = useState(true)
   
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const location = useLocation()
   
-  const { loading, error } = useSelector((state) => state.auth)
+  const { loading, error, isAuthenticated } = useSelector((state) => state.auth)
 
   // Get the page user was trying to access
   const from = location.state?.from?.pathname || '/admin/dashboard'
+
+  // Check if user is already authenticated
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        // Check if user is authenticated from Redux state
+        if (isAuthenticated) {
+          console.log('User already authenticated, redirecting to dashboard')
+          navigate(from, { replace: true })
+          return
+        }
+
+        // Also check localStorage for token
+        const token = authService.getToken()
+        if (token) {
+          console.log('Token found in localStorage, redirecting to dashboard')
+          navigate(from, { replace: true })
+          return
+        }
+
+        // If not authenticated, show login form
+        setCheckingAuth(false)
+      } catch (error) {
+        console.error('Error checking authentication:', error)
+        setCheckingAuth(false)
+      }
+    }
+
+    checkAuth()
+  }, [isAuthenticated, navigate, from])
+
+  // Show loading spinner while checking authentication
+  if (checkingAuth) {
+    return (
+      <div className="bg-body-tertiary min-vh-100 d-flex flex-row align-items-center">
+        <CContainer>
+          <CRow className="justify-content-center">
+            <CCol md={6} className="text-center">
+              <CSpinner color="primary" variant="grow" />
+              <p className="mt-3">Checking authentication...</p>
+            </CCol>
+          </CRow>
+        </CContainer>
+      </div>
+    )
+  }
 
   const validateForm = () => {
     const errors = {}

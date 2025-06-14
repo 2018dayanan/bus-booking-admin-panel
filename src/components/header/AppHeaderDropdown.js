@@ -101,7 +101,7 @@ const AppHeaderDropdown = () => {
           </CBadge>
         </CDropdownItem>
         <CDropdownHeader className="bg-body-secondary fw-semibold my-2">Settings</CDropdownHeader>
-        <CDropdownItem as={Link} to="/profile">
+        <CDropdownItem as={Link} to="/admin/profile">
           <CIcon icon={cilUser} className="me-2" />
           Profile
         </CDropdownItem>

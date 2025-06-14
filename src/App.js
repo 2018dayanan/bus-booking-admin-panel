@@ -1,6 +1,6 @@
 import React, { Suspense, useEffect } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 
 import { CSpinner, useColorModes } from '@coreui/react'
 import './scss/style.scss'
@@ -21,9 +21,33 @@ const Register = React.lazy(() => import('./views/pages/register/Register'))
 const Page404 = React.lazy(() => import('./views/pages/page404/Page404'))
 const Page500 = React.lazy(() => import('./views/pages/page500/Page500'))
 
+// Services
+import authService from './services/authService'
+
 const App = () => {
   const { isColorModeSet, setColorMode } = useColorModes('coreui-free-react-admin-template-theme')
   const storedTheme = useSelector((state) => state.theme)
+  const dispatch = useDispatch()
+
+  useEffect(() => {
+    // Initialize authentication state
+    const initializeAuth = () => {
+      const token = authService.getToken()
+      const user = authService.getUser()
+      
+      if (token && user) {
+        console.log('App: Found existing authentication, updating Redux state')
+        dispatch({ 
+          type: 'LOGIN_SUCCESS', 
+          user: user 
+        })
+      } else {
+        console.log('App: No existing authentication found')
+      }
+    }
+
+    initializeAuth()
+  }, [dispatch])
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.href.split('?')[1])

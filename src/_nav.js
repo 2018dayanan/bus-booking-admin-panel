@@ -18,16 +18,16 @@ const _nav = [
       text: 'NEW',
     },
   },
-  // {
-  //   component: CNavItem,
-  //   name: 'Dashboard2',
-  //   to: '/admin/dashboard2',
-  //   icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
-  //   badge: {
-  //     color: 'success',
-  //     text: 'SIMPLE',
-  //   },
-  // },
+  {
+    component: CNavItem,
+    name: 'Dashboard2',
+    to: '/admin/dashboard2',
+    icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
+    badge: {
+      color: 'success',
+      text: 'SIMPLE',
+    },
+  },
   {
     component: CNavItem,
     name: 'Profile',
