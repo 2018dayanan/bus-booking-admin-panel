@@ -1,12 +1,9 @@
 import axios from 'axios'
-
-const API_BASE_URL = 'http://192.168.1.78:7000/api' // Use local proxy to avoid CORS
+import { API_BASE_URL, API_ENDPOINTS } from '../config/apiConfig'
 
 // Get auth token from localStorage
 const getAuthToken = () => {
   return localStorage.getItem('authToken');
-
-
 }
 
 // Create axios instance with auth header
@@ -22,7 +19,6 @@ apiClient.interceptors.request.use(
   (config) => {
     const token = getAuthToken()
     console.log("my token is ", token)
-    
     
     if (token) {
       // Try different auth header formats
@@ -42,7 +38,7 @@ const userService = {
   // Get all users
   getAllUsers: async () => {
     try {
-      const response = await apiClient.get('/admin/getAllUsers')
+      const response = await apiClient.get(API_ENDPOINTS.GET_ALL_USERS)
       console.log('API Response:', response) // Debug log
       return response
     } catch (error) {
@@ -58,7 +54,7 @@ const userService = {
   // Get user by ID
   getUserById: async (userId) => {
     try {
-      const response = await apiClient.get(`/admin/users/${userId}`)
+      const response = await apiClient.get(`${API_ENDPOINTS.GET_USER_BY_ID}/${userId}`)
       return response
     } catch (error) {
       console.error('Error fetching user:', error)
@@ -69,7 +65,7 @@ const userService = {
   // Update user
   updateUser: async (userId, userData) => {
     try {
-      const response = await apiClient.put(`/admin/users/${userId}`, userData)
+      const response = await apiClient.put(`${API_ENDPOINTS.UPDATE_USER}/${userId}`, userData)
       return response
     } catch (error) {
       console.error('Error updating user:', error)
@@ -80,7 +76,7 @@ const userService = {
   // Delete user
   deleteUser: async (userId) => {
     try {
-      const response = await apiClient.delete(`/admin/users/${userId}`)
+      const response = await apiClient.delete(`${API_ENDPOINTS.DELETE_USER}/${userId}`)
       return response
     } catch (error) {
       console.error('Error deleting user:', error)
@@ -91,7 +87,7 @@ const userService = {
   // Create new user
   createUser: async (userData) => {
     try {
-      const response = await apiClient.post('/admin/createAccount', userData)
+      const response = await apiClient.post(API_ENDPOINTS.CREATE_USER, userData)
       return response
     } catch (error) {
       console.error('Error creating user:', error)

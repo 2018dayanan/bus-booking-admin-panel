@@ -1,6 +1,5 @@
 import axios from 'axios'
-
-const API_BASE_URL = 'http://192.168.1.78:7000/api'
+import { API_BASE_URL, API_ENDPOINTS } from '../config/apiConfig'
 
 // Get auth token from localStorage
 const getAuthToken = () => {
@@ -35,7 +34,7 @@ class TicketService {
   // Get all tickets
   async getAllTickets() {
     try {
-      const response = await apiClient.get('/admin/getAllTicket')
+      const response = await apiClient.get(API_ENDPOINTS.GET_ALL_TICKETS)
       console.log('Ticket API Response:', response)
       return response
     } catch (error) {
@@ -51,7 +50,7 @@ class TicketService {
   // Get ticket by ID
   async getTicketById(ticketId) {
     try {
-      const response = await apiClient.get(`/admin/tickets/${ticketId}`)
+      const response = await apiClient.get(`${API_ENDPOINTS.GET_TICKET_BY_ID}/${ticketId}`)
       return response
     } catch (error) {
       console.error('Error fetching ticket:', error)
@@ -63,9 +62,9 @@ class TicketService {
   async createTicket(ticketData) {
     try {
       console.log('Creating ticket with data:', ticketData)
-      console.log('API URL:', `${API_BASE_URL}/ticket/createTicket`)
+      console.log('API URL:', `${API_BASE_URL}${API_ENDPOINTS.CREATE_TICKET}`)
       
-      const response = await apiClient.post('/ticket/createTicket', ticketData)
+      const response = await apiClient.post(API_ENDPOINTS.CREATE_TICKET, ticketData)
       console.log('Ticket created successfully:', response)
       return response
     } catch (error) {
@@ -84,9 +83,9 @@ class TicketService {
     try {
       console.log('Updating ticket with ID:', ticketId)
       console.log('Update data:', ticketData)
-      console.log('API URL:', `${API_BASE_URL}/ticket/updateTicket`)
+      console.log('API URL:', `${API_BASE_URL}${API_ENDPOINTS.UPDATE_TICKET}`)
       
-      const response = await apiClient.patch('/ticket/updateTicket', {
+      const response = await apiClient.patch(API_ENDPOINTS.UPDATE_TICKET, {
         ticketId: ticketId,
         ...ticketData
       })
@@ -106,7 +105,7 @@ class TicketService {
   // Delete ticket
   async deleteTicket(ticketId) {
     try {
-      const response = await apiClient.delete(`/admin/tickets/${ticketId}`)
+      const response = await apiClient.delete(`${API_ENDPOINTS.DELETE_TICKET}/${ticketId}`)
       return response
     } catch (error) {
       console.error('Error deleting ticket:', error)
@@ -117,7 +116,7 @@ class TicketService {
   // Get tickets by operator
   async getTicketsByOperator(operatorId) {
     try {
-      const response = await apiClient.get(`/admin/tickets/operator/${operatorId}`)
+      const response = await apiClient.get(`${API_ENDPOINTS.GET_TICKETS_BY_OPERATOR}/${operatorId}`)
       return response
     } catch (error) {
       console.error('Error fetching operator tickets:', error)
@@ -128,7 +127,7 @@ class TicketService {
   // Get tickets by date range
   async getTicketsByDateRange(startDate, endDate) {
     try {
-      const response = await apiClient.get(`/admin/tickets/date-range?start=${startDate}&end=${endDate}`)
+      const response = await apiClient.get(`${API_ENDPOINTS.GET_TICKETS_BY_DATE_RANGE}?start=${startDate}&end=${endDate}`)
       return response
     } catch (error) {
       console.error('Error fetching tickets by date range:', error)
@@ -139,7 +138,7 @@ class TicketService {
   // Get tickets by route
   async getTicketsByRoute(from, to) {
     try {
-      const response = await apiClient.get(`/admin/tickets/route?from=${from}&to=${to}`)
+      const response = await apiClient.get(`${API_ENDPOINTS.GET_TICKETS_BY_ROUTE}?from=${from}&to=${to}`)
       return response
     } catch (error) {
       console.error('Error fetching tickets by route:', error)

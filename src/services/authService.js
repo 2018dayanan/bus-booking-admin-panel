@@ -1,8 +1,6 @@
+import { API_BASE_URL, API_ENDPOINTS, ERROR_MESSAGES } from '../config/apiConfig';
+
 const USE_MOCK_API = false;
-
-const API_BASE_URL = 'http://34.229.93.103/api'; 
-// const API_BASE_URL = 'http://192.168.195.125:7000/api';
-
 
 let mockApi;
 if (USE_MOCK_API) {
@@ -21,7 +19,7 @@ class AuthService {
         return data;
       }
 
-      console.log('AuthService: Making API call to:', `${API_BASE_URL}/login`)
+      console.log('AuthService: Making API call to:', `${API_BASE_URL}${API_ENDPOINTS.LOGIN}`)
       
       const requestBody = {
         emailOrPhone: credentials.username, 
@@ -30,7 +28,7 @@ class AuthService {
       
       console.log('AuthService: Request body:', { emailOrPhone: requestBody.emailOrPhone, password: '***' })
 
-      const response = await fetch(`${API_BASE_URL}/login`, {
+      const response = await fetch(`${API_BASE_URL}${API_ENDPOINTS.LOGIN}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
