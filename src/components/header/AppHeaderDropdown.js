@@ -1,6 +1,6 @@
 import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import {
   CAvatar,
   CBadge,
@@ -44,19 +44,33 @@ const AppHeaderDropdown = () => {
     navigate('/login')
   }
 
+  // Get profile picture from user data, with fallback to default avatar
+  const getProfilePicture = () => {
+    if (user && user.profilePicture) {
+      return user.profilePicture
+    }
+    return avatar8 // Fallback to default avatar
+  }
+
+  // Get user display name
+  const getUserDisplayName = () => {
+    if (user) {
+      return user.name || user.username || 'User'
+    }
+    return 'User'
+  }
+
   return (
     <CDropdown variant="nav-item">
       <CDropdownToggle placement="bottom-end" className="py-0 pe-0" caret={false}>
-        <CAvatar src={avatar8} size="md" />
+        <CAvatar src={getProfilePicture()} size="md" />
       </CDropdownToggle>
       <CDropdownMenu className="pt-0" placement="bottom-end">
         <CDropdownHeader className="bg-body-secondary fw-semibold mb-2">
           Account
-          {user && (
-            <div className="small text-muted">
-              {user.name || user.username || 'User'}
-            </div>
-          )}
+          <div className="small text-muted">
+            {getUserDisplayName()}
+          </div>
         </CDropdownHeader>
         <CDropdownItem href="#">
           <CIcon icon={cilBell} className="me-2" />
@@ -87,7 +101,7 @@ const AppHeaderDropdown = () => {
           </CBadge>
         </CDropdownItem>
         <CDropdownHeader className="bg-body-secondary fw-semibold my-2">Settings</CDropdownHeader>
-        <CDropdownItem href="#">
+        <CDropdownItem as={Link} to="/profile">
           <CIcon icon={cilUser} className="me-2" />
           Profile
         </CDropdownItem>
