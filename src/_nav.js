@@ -53,7 +53,11 @@ const _nav = [
         name: 'Users',
         to: '/admin/users',
       },
-     
+      {
+        component: CNavItem,
+        name: 'Add User',
+        to: '/admin/users/add',
+      },
     ],
   },
   {
@@ -66,6 +70,11 @@ const _nav = [
         component: CNavItem,
         name: 'All Tickets',
         to: '/admin/tickets',
+      },
+      {
+        component: CNavItem,
+        name: 'Add Tickets',
+        to: '/admin/tickets/add',
       },
     ],
   },

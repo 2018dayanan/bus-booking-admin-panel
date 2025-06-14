@@ -31,6 +31,8 @@ import {
   CListGroupItem,
   CRow,
   CCol,
+  CPagination,
+  CPaginationItem,
 } from '@coreui/react';
 import { 
   cilOptions, 
@@ -44,6 +46,8 @@ import {
   cilMoney,
   cilStar,
   cilX,
+  cilChevronLeft,
+  cilChevronRight,
 } from '@coreui/icons';
 import CIcon from '@coreui/icons-react';
 import ticketService from '../../services/ticketService';
@@ -57,6 +61,11 @@ const Tickets = () => {
   const [selectedTicket, setSelectedTicket] = useState(null);
   const [showDropdown, setShowDropdown] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [ticketsPerPage] = useState(10);
+  
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -209,6 +218,22 @@ const Tickets = () => {
     setSelectedTicket(null);
   };
 
+  // Pagination logic
+  const indexOfLastTicket = currentPage * ticketsPerPage;
+  const indexOfFirstTicket = indexOfLastTicket - ticketsPerPage;
+  const currentTickets = filteredTickets.slice(indexOfFirstTicket, indexOfLastTicket);
+  const totalPages = Math.ceil(filteredTickets.length / ticketsPerPage);
+
+  // Change page
+  const paginate = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
+  // Reset to first page when search changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm]);
+
   if (loading) {
     return (
       <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '400px' }}>
@@ -305,7 +330,7 @@ const Tickets = () => {
               </CTableRow>
             </CTableHead>
             <CTableBody>
-              {filteredTickets.map((ticket) => (
+              {currentTickets.map((ticket) => (
                 <CTableRow key={ticket._id}>
                   <CTableDataCell>
                     <div className="d-flex align-items-center">
@@ -381,6 +406,51 @@ const Tickets = () => {
               <p className="text-muted">
                 {searchTerm ? 'Try a different search term.' : 'No tickets are currently available in the system.'}
               </p>
+            </div>
+          )}
+
+          {/* Pagination and Ticket Count */}
+          {filteredTickets.length > 0 && (
+            <div className="d-flex justify-content-between align-items-center mt-4">
+              <div className="text-muted">
+                Showing {indexOfFirstTicket + 1} to {Math.min(indexOfLastTicket, filteredTickets.length)} of {filteredTickets.length} tickets
+              </div>
+              
+              {totalPages > 1 && (
+                <CPagination aria-label="Tickets pagination">
+                  {/* Previous button */}
+                  <CPaginationItem 
+                    aria-label="Previous" 
+                    disabled={currentPage === 1}
+                    onClick={() => paginate(currentPage - 1)}
+                    style={{ cursor: currentPage === 1 ? 'not-allowed' : 'pointer' }}
+                  >
+                    <CIcon icon={cilChevronLeft} />
+                  </CPaginationItem>
+                  
+                  {/* Page numbers */}
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((number) => (
+                    <CPaginationItem
+                      key={number}
+                      active={currentPage === number}
+                      onClick={() => paginate(number)}
+                      style={{ cursor: 'pointer' }}
+                    >
+                      {number}
+                    </CPaginationItem>
+                  ))}
+                  
+                  {/* Next button */}
+                  <CPaginationItem 
+                    aria-label="Next" 
+                    disabled={currentPage === totalPages}
+                    onClick={() => paginate(currentPage + 1)}
+                    style={{ cursor: currentPage === totalPages ? 'not-allowed' : 'pointer' }}
+                  >
+                    <CIcon icon={cilChevronRight} />
+                  </CPaginationItem>
+                </CPagination>
+              )}
             </div>
           )}
         </CCardBody>

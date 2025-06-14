@@ -4,6 +4,7 @@ const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
 const Profile = React.lazy(() => import('./views/pages/Profile'))
 const Tickets = React.lazy(() => import('./views/pages/Tickets'))
 const TicketDetail = React.lazy(() => import('./views/pages/TicketDetail'))
+const AddTicket = React.lazy(() => import('./views/pages/AddTicket'))
 const Users = React.lazy(() => import('./views/pages/Users'))
 const UserDetail = React.lazy(() => import('./views/pages/UserDetail'))
 const AddUser = React.lazy(() => import('./views/pages/AddUser'))
@@ -65,6 +66,7 @@ const routes = [
   { path: '/users/add', name: 'Add User', element: AddUser },
   { path: '/admin/users/:id', name: 'User Detail', element: UserDetail },
   { path: '/tickets', name: 'Tickets', element: Tickets },
+  { path: '/tickets/add', name: 'Add Ticket', element: AddTicket },
   { path: '/admin/tickets/:id', name: 'Ticket Detail', element: TicketDetail },
   { path: '/admin/theme', name: 'Theme', element: Colors, exact: true },
   { path: '/admin/theme/colors', name: 'Colors', element: Colors },

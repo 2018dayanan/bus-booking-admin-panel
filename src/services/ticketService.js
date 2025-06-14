@@ -62,10 +62,19 @@ class TicketService {
   // Create new ticket
   async createTicket(ticketData) {
     try {
-      const response = await apiClient.post('/admin/tickets', ticketData)
+      console.log('Creating ticket with data:', ticketData)
+      console.log('API URL:', `${API_BASE_URL}/ticket/createTicket`)
+      
+      const response = await apiClient.post('/ticket/createTicket', ticketData)
+      console.log('Ticket created successfully:', response)
       return response
     } catch (error) {
       console.error('Error creating ticket:', error)
+      if (error.response) {
+        console.error('Response status:', error.response.status)
+        console.error('Response data:', error.response.data)
+        console.error('Response headers:', error.response.headers)
+      }
       throw error
     }
   }
