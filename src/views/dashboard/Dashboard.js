@@ -180,7 +180,7 @@ const Dashboard = () => {
     <>
       <WidgetsDropdown className="mb-4" />
       <CCard className="mb-4">
-        <CCardBody>
+        {/* <CCardBody>
           <CRow>
             <CCol sm={5}>
               <h4 id="traffic" className="card-title mb-0">
@@ -207,8 +207,8 @@ const Dashboard = () => {
             </CCol>
           </CRow>
           <MainChart />
-        </CCardBody>
-        <CCardFooter>
+        </CCardBody> */}
+        {/* <CCardFooter>
           <CRow
             xs={{ cols: 1, gutter: 4 }}
             sm={{ cols: 2 }}
@@ -231,7 +231,7 @@ const Dashboard = () => {
               </CCol>
             ))}
           </CRow>
-        </CCardFooter>
+        </CCardFooter> */}
       </CCard>
       <WidgetsBrand className="mb-4" withCharts />
       <CRow>
