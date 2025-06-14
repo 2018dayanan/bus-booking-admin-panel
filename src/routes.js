@@ -6,6 +6,7 @@ const Tickets = React.lazy(() => import('./views/pages/Tickets'))
 const TicketDetail = React.lazy(() => import('./views/pages/TicketDetail'))
 const Users = React.lazy(() => import('./views/pages/Users'))
 const UserDetail = React.lazy(() => import('./views/pages/UserDetail'))
+const AddUser = React.lazy(() => import('./views/pages/AddUser'))
 const Colors = React.lazy(() => import('./views/theme/colors/Colors'))
 const Typography = React.lazy(() => import('./views/theme/typography/Typography'))
 
@@ -61,8 +62,9 @@ const routes = [
   { path: '/dashboard', name: 'Dashboard', element: Dashboard },
   { path: '/profile', name: 'Profile', element: Profile },
   { path: '/users', name: 'Users', element: Users },
+  { path: '/users/add', name: 'Add User', element: AddUser },
   { path: '/admin/users/:id', name: 'User Detail', element: UserDetail },
-  { path: '/admin/tickets', name: 'Tickets', element: Tickets },
+  { path: '/tickets', name: 'Tickets', element: Tickets },
   { path: '/admin/tickets/:id', name: 'Ticket Detail', element: TicketDetail },
   { path: '/admin/theme', name: 'Theme', element: Colors, exact: true },
   { path: '/admin/theme/colors', name: 'Colors', element: Colors },

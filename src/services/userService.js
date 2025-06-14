@@ -91,7 +91,7 @@ const userService = {
   // Create new user
   createUser: async (userData) => {
     try {
-      const response = await apiClient.post('/admin/users', userData)
+      const response = await apiClient.post('/admin/createAccount', userData)
       return response
     } catch (error) {
       console.error('Error creating user:', error)
