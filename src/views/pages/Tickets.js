@@ -22,8 +22,29 @@ import {
   CFormInput,
   CInputGroup,
   CInputGroupText,
+  CModal,
+  CModalHeader,
+  CModalTitle,
+  CModalBody,
+  CModalFooter,
+  CListGroup,
+  CListGroupItem,
+  CRow,
+  CCol,
 } from '@coreui/react';
-import { cilOptions, cilBusAlt, cilUser, cilCalendar, cilLocationPin, cilSearch } from '@coreui/icons';
+import { 
+  cilOptions, 
+  cilBusAlt, 
+  cilUser, 
+  cilCalendar, 
+  cilLocationPin, 
+  cilSearch,
+  cilClock,
+  cilSpeedometer,
+  cilMoney,
+  cilStar,
+  cilX,
+} from '@coreui/icons';
 import CIcon from '@coreui/icons-react';
 import ticketService from '../../services/ticketService';
 
@@ -35,6 +56,7 @@ const Tickets = () => {
   const [error, setError] = useState(null);
   const [selectedTicket, setSelectedTicket] = useState(null);
   const [showDropdown, setShowDropdown] = useState(null);
+  const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -135,7 +157,7 @@ const Tickets = () => {
     try {
       switch (action) {
         case 'view':
-          navigate(`/admin/tickets/${ticket._id}`);
+          setShowModal(true);
           break;
         case 'edit':
           alert(`Edit ticket ${ticket.bussName}`);
@@ -161,9 +183,14 @@ const Tickets = () => {
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
-      month: 'short',
+      month: 'long',
       day: 'numeric',
     });
+  };
+
+  const formatTime = (timeString) => {
+    if (!timeString) return 'N/A';
+    return timeString;
   };
 
   const getShiftBadgeColor = (shift) => {
@@ -175,6 +202,11 @@ const Tickets = () => {
       default:
         return 'secondary';
     }
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+    setSelectedTicket(null);
   };
 
   if (loading) {
@@ -236,121 +268,331 @@ const Tickets = () => {
   }
 
   return (
-    <CCard>
-      <CCardHeader>
-        <div className="d-flex justify-content-between align-items-center">
-          <h4 className="mb-0">Ticket Management</h4>
-          <CButton color="primary" onClick={() => navigate('/admin/tickets/add')}>
-            <CIcon icon={cilBusAlt} className="me-2" />
-            Add New Ticket
-          </CButton>
-        </div>
-      </CCardHeader>
-      <CCardBody>
-        <CInputGroup className="mb-3">
-          <CInputGroupText>
-            <CIcon icon={cilSearch} />
-          </CInputGroupText>
-          <CFormInput
-            placeholder="Search by bus name, operator, vehicle type, bus number, date, route, or shift..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </CInputGroup>
+    <>
+      <CCard>
+        <CCardHeader>
+          <div className="d-flex justify-content-between align-items-center">
+            <h4 className="mb-0">Ticket Management</h4>
+            <CButton color="primary" onClick={() => navigate('/admin/tickets/add')}>
+              <CIcon icon={cilBusAlt} className="me-2" />
+              Add New Ticket
+            </CButton>
+          </div>
+        </CCardHeader>
+        <CCardBody>
+          <CInputGroup className="mb-3">
+            <CInputGroupText>
+              <CIcon icon={cilSearch} />
+            </CInputGroupText>
+            <CFormInput
+              placeholder="Search by bus name, operator, vehicle type, bus number, date, route, or shift..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </CInputGroup>
 
-        <CTable align="middle" className="mb-0 border" hover responsive>
-          <CTableHead color="light">
-            <CTableRow>
-              <CTableHeaderCell>Bus Info</CTableHeaderCell>
-              <CTableHeaderCell>Operator</CTableHeaderCell>
-              <CTableHeaderCell>Vehicle Type</CTableHeaderCell>
-              <CTableHeaderCell>Bus No</CTableHeaderCell>
-              <CTableHeaderCell>Date</CTableHeaderCell>
-              <CTableHeaderCell>Route</CTableHeaderCell>
-              <CTableHeaderCell>Shift</CTableHeaderCell>
-              <CTableHeaderCell className="text-end">Actions</CTableHeaderCell>
-            </CTableRow>
-          </CTableHead>
-          <CTableBody>
-            {filteredTickets.map((ticket) => (
-              <CTableRow key={ticket._id}>
-                <CTableDataCell>
-                  <div className="d-flex align-items-center">
-                    <CAvatar src={ticket.thumbnail} size="md" className="me-3" />
-                    <div>
-                      <div className="fw-semibold">{ticket.bussName}</div>
-                      <div className="small text-muted">
-                        {ticket.departureTime} - {ticket.arrivalTime}
+          <CTable align="middle" className="mb-0 border" hover responsive>
+            <CTableHead color="light">
+              <CTableRow>
+                <CTableHeaderCell>Bus Info</CTableHeaderCell>
+                <CTableHeaderCell>Operator</CTableHeaderCell>
+                <CTableHeaderCell>Vehicle Type</CTableHeaderCell>
+                <CTableHeaderCell>Bus No</CTableHeaderCell>
+                <CTableHeaderCell>Date</CTableHeaderCell>
+                <CTableHeaderCell>Route</CTableHeaderCell>
+                <CTableHeaderCell>Shift</CTableHeaderCell>
+                <CTableHeaderCell className="text-end">Actions</CTableHeaderCell>
+              </CTableRow>
+            </CTableHead>
+            <CTableBody>
+              {filteredTickets.map((ticket) => (
+                <CTableRow key={ticket._id}>
+                  <CTableDataCell>
+                    <div className="d-flex align-items-center">
+                      <CAvatar src={ticket.thumbnail} size="md" className="me-3" />
+                      <div>
+                        <div className="fw-semibold">{ticket.bussName}</div>
+                        <div className="small text-muted">
+                          {ticket.departureTime} - {ticket.arrivalTime}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </CTableDataCell>
-                <CTableDataCell>
-                  <div className="d-flex align-items-center">
-                    <CIcon icon={cilUser} className="me-2" />
-                    <div>
-                      <div className="fw-semibold">{ticket.operatorName}</div>
-                      <div className="small text-muted">{ticket.operatorRole}</div>
+                  </CTableDataCell>
+                  <CTableDataCell>
+                    <div className="d-flex align-items-center">
+                      <CIcon icon={cilUser} className="me-2" />
+                      <div>
+                        <div className="fw-semibold">{ticket.operatorName}</div>
+                        <div className="small text-muted">{ticket.operatorRole}</div>
+                      </div>
                     </div>
-                  </div>
-                </CTableDataCell>
-                <CTableDataCell>
-                  <CBadge color="info">{ticket.vehicleType}</CBadge>
-                </CTableDataCell>
-                <CTableDataCell>
-                  <span className="fw-semibold">{ticket.bussNo}</span>
-                </CTableDataCell>
-                <CTableDataCell>
-                  <div className="d-flex align-items-center">
-                    <CIcon icon={cilCalendar} className="me-2" />
-                    <div className="small">{formatDate(ticket.date)}</div>
-                  </div>
-                </CTableDataCell>
-                <CTableDataCell>
-                  <div className="d-flex align-items-center">
-                    <CIcon icon={cilLocationPin} className="me-2" />
-                    <div>
-                      <div className="small">{ticket?.route?.from ?? 'N/A'}</div>
-                      <div className="small text-muted">→ {ticket?.route?.to ?? 'N/A'}</div>
+                  </CTableDataCell>
+                  <CTableDataCell>
+                    <CBadge color="info">{ticket.vehicleType}</CBadge>
+                  </CTableDataCell>
+                  <CTableDataCell>
+                    <span className="fw-semibold">{ticket.bussNo}</span>
+                  </CTableDataCell>
+                  <CTableDataCell>
+                    <div className="d-flex align-items-center">
+                      <CIcon icon={cilCalendar} className="me-2" />
+                      <div className="small">{formatDate(ticket.date)}</div>
                     </div>
-                  </div>
-                </CTableDataCell>
-                <CTableDataCell>
-                  <CBadge color={getShiftBadgeColor(ticket.shift)}>
-                    {ticket.shift?.toUpperCase() || 'N/A'}
-                  </CBadge>
-                </CTableDataCell>
-                <CTableDataCell className="text-end">
-                  <CDropdown
-                    visible={showDropdown === ticket._id}
-                    onVisibleChange={(visible) => handleDropdown(visible, ticket._id)}
-                  >
-                    <CDropdownToggle color="light" caret={false}>
-                      <CIcon icon={cilOptions} size="lg" />
-                    </CDropdownToggle>
-                    <CDropdownMenu>
-                      <CDropdownItem onClick={() => handleAction('view', ticket)}>View Details</CDropdownItem>
-                      <CDropdownItem onClick={() => handleAction('edit', ticket)}>Edit Ticket</CDropdownItem>
-                      <CDropdownItem onClick={() => handleAction('delete', ticket)}>Delete Ticket</CDropdownItem>
-                    </CDropdownMenu>
-                  </CDropdown>
-                </CTableDataCell>
-              </CTableRow>
-            ))}
-          </CTableBody>
-        </CTable>
+                  </CTableDataCell>
+                  <CTableDataCell>
+                    <div className="d-flex align-items-center">
+                      <CIcon icon={cilLocationPin} className="me-2" />
+                      <div>
+                        <div className="small">{ticket?.route?.from ?? 'N/A'}</div>
+                        <div className="small text-muted">→ {ticket?.route?.to ?? 'N/A'}</div>
+                      </div>
+                    </div>
+                  </CTableDataCell>
+                  <CTableDataCell>
+                    <CBadge color={getShiftBadgeColor(ticket.shift)}>
+                      {ticket.shift?.toUpperCase() || 'N/A'}
+                    </CBadge>
+                  </CTableDataCell>
+                  <CTableDataCell className="text-end">
+                    <CDropdown
+                      visible={showDropdown === ticket._id}
+                      onVisibleChange={(visible) => handleDropdown(visible, ticket._id)}
+                    >
+                      <CDropdownToggle color="light" caret={false}>
+                        <CIcon icon={cilOptions} size="lg" />
+                      </CDropdownToggle>
+                      <CDropdownMenu>
+                        <CDropdownItem onClick={() => handleAction('view', ticket)}>View Details</CDropdownItem>
+                        <CDropdownItem onClick={() => handleAction('view', ticket)}>Seats Details</CDropdownItem>
+                        <CDropdownItem onClick={() => handleAction('edit', ticket)}>Edit Ticket</CDropdownItem>
+                        <CDropdownItem onClick={() => handleAction('delete', ticket)}>Delete Ticket</CDropdownItem>
+                      </CDropdownMenu>
+                    </CDropdown>
+                  </CTableDataCell>
+                </CTableRow>
+              ))}
+            </CTableBody>
+          </CTable>
 
-        {filteredTickets.length === 0 && !loading && (
-          <div className="text-center py-5">
-            <CIcon icon={cilBusAlt} size="3xl" className="text-muted mb-3" />
-            <h5 className="text-muted">{searchTerm ? 'No tickets match your search' : 'No tickets found'}</h5>
-            <p className="text-muted">
-              {searchTerm ? 'Try a different search term.' : 'No tickets are currently available in the system.'}
-            </p>
-          </div>
-        )}
-      </CCardBody>
-    </CCard>
+          {filteredTickets.length === 0 && !loading && (
+            <div className="text-center py-5">
+              <CIcon icon={cilBusAlt} size="3xl" className="text-muted mb-3" />
+              <h5 className="text-muted">{searchTerm ? 'No tickets match your search' : 'No tickets found'}</h5>
+              <p className="text-muted">
+                {searchTerm ? 'Try a different search term.' : 'No tickets are currently available in the system.'}
+              </p>
+            </div>
+          )}
+        </CCardBody>
+      </CCard>
+
+      {/* Ticket Details Modal */}
+      <CModal 
+        visible={showModal} 
+        onClose={closeModal}
+        size="lg"
+        backdrop="static"
+      >
+        <CModalHeader closeButton>
+          <CModalTitle>
+            <CIcon icon={cilBusAlt} className="me-2" />
+            Ticket Details
+          </CModalTitle>
+        </CModalHeader>
+        <CModalBody>
+          {selectedTicket && (
+            <div>
+              {/* Header with Bus Image and Basic Info */}
+              <div className="text-center mb-4">
+                <CAvatar
+                  src={selectedTicket.thumbnail}
+                  size="xl"
+                  className="mb-3"
+                  style={{ width: '120px', height: '120px' }}
+                />
+                <h4 className="mb-2">{selectedTicket.bussName}</h4>
+                <CBadge color={getShiftBadgeColor(selectedTicket.shift)} className="mb-2">
+                  {selectedTicket.shift?.toUpperCase() || 'N/A'}
+                </CBadge>
+                <div className="text-muted">Bus No: {selectedTicket.bussNo}</div>
+              </div>
+
+              <CRow>
+                <CCol md={6}>
+                  <CCard className="mb-3">
+                    <CCardHeader>
+                      <h6 className="mb-0">
+                        <CIcon icon={cilUser} className="me-2" />
+                        Operator Information
+                      </h6>
+                    </CCardHeader>
+                    <CCardBody>
+                      <CListGroup flush>
+                        <CListGroupItem className="d-flex justify-content-between align-items-center">
+                          <strong>Name:</strong>
+                          <span>{selectedTicket.operatorName}</span>
+                        </CListGroupItem>
+                        <CListGroupItem className="d-flex justify-content-between align-items-center">
+                          <strong>Role:</strong>
+                          <span>{selectedTicket.operatorRole}</span>
+                        </CListGroupItem>
+                        <CListGroupItem className="d-flex justify-content-between align-items-center">
+                          <strong>Operator ID:</strong>
+                          <span className="text-muted">{selectedTicket.operatorId}</span>
+                        </CListGroupItem>
+                      </CListGroup>
+                    </CCardBody>
+                  </CCard>
+                </CCol>
+
+                <CCol md={6}>
+                  <CCard className="mb-3">
+                    <CCardHeader>
+                      <h6 className="mb-0">
+                        <CIcon icon={cilClock} className="me-2" />
+                        Schedule Information
+                      </h6>
+                    </CCardHeader>
+                    <CCardBody>
+                      <CListGroup flush>
+                        <CListGroupItem className="d-flex justify-content-between align-items-center">
+                          <strong>Date:</strong>
+                          <span>{formatDate(selectedTicket.date)}</span>
+                        </CListGroupItem>
+                        <CListGroupItem className="d-flex justify-content-between align-items-center">
+                          <strong>Departure:</strong>
+                          <span>{formatTime(selectedTicket.departureTime)}</span>
+                        </CListGroupItem>
+                        <CListGroupItem className="d-flex justify-content-between align-items-center">
+                          <strong>Arrival:</strong>
+                          <span>{formatTime(selectedTicket.arrivalTime)}</span>
+                        </CListGroupItem>
+                        <CListGroupItem className="d-flex justify-content-between align-items-center">
+                          <strong>Duration:</strong>
+                          <span>{selectedTicket.totalTimeTaken}</span>
+                        </CListGroupItem>
+                      </CListGroup>
+                    </CCardBody>
+                  </CCard>
+                </CCol>
+              </CRow>
+
+              <CRow>
+                <CCol md={6}>
+                  <CCard className="mb-3">
+                    <CCardHeader>
+                      <h6 className="mb-0">
+                        <CIcon icon={cilLocationPin} className="me-2" />
+                        Route Information
+                      </h6>
+                    </CCardHeader>
+                    <CCardBody>
+                      <CListGroup flush>
+                        <CListGroupItem className="d-flex justify-content-between align-items-center">
+                          <strong>From:</strong>
+                          <span>{selectedTicket?.route?.from || 'N/A'}</span>
+                        </CListGroupItem>
+                        <CListGroupItem className="d-flex justify-content-between align-items-center">
+                          <strong>To:</strong>
+                          <span>{selectedTicket?.route?.to || 'N/A'}</span>
+                        </CListGroupItem>
+                      </CListGroup>
+                    </CCardBody>
+                  </CCard>
+                </CCol>
+
+                <CCol md={6}>
+                  <CCard className="mb-3">
+                    <CCardHeader>
+                      <h6 className="mb-0">
+                        <CIcon icon={cilSpeedometer} className="me-2" />
+                        Vehicle Information
+                      </h6>
+                    </CCardHeader>
+                    <CCardBody>
+                      <CListGroup flush>
+                        <CListGroupItem className="d-flex justify-content-between align-items-center">
+                          <strong>Type:</strong>
+                          <CBadge color="info">{selectedTicket.vehicleType}</CBadge>
+                        </CListGroupItem>
+                        <CListGroupItem className="d-flex justify-content-between align-items-center">
+                          <strong>Total Seats:</strong>
+                          <span>{selectedTicket.totalSeats || 'N/A'}</span>
+                        </CListGroupItem>
+                        {/* <CListGroupItem className="d-flex justify-content-between align-items-center">
+                          <strong>Available Seats:</strong>
+                          <span>{selectedTicket.availableSeats || 'N/A'}</span>
+                        </CListGroupItem> */}
+                      </CListGroup>
+                    </CCardBody>
+                  </CCard>
+                </CCol>
+              </CRow>
+
+              {/* Pricing and Additional Info */}
+              <CRow>
+                <CCol md={6}>
+                  <CCard className="mb-3">
+                    <CCardHeader>
+                      <h6 className="mb-0">
+                        <CIcon icon={cilMoney} className="me-2" />
+                        Pricing Information
+                      </h6>
+                    </CCardHeader>
+                    <CCardBody>
+                      <CListGroup flush>
+                        <CListGroupItem className="d-flex justify-content-between align-items-center">
+                          <strong>Price:</strong>
+                          <span className="fw-bold text-success">₹{selectedTicket.price || 'N/A'}</span>
+                        </CListGroupItem>
+                        <CListGroupItem className="d-flex justify-content-between align-items-center">
+                          <strong>Reward Points:</strong>
+                          <span>{selectedTicket.rewardPoints || 'N/A'}</span>
+                        </CListGroupItem>
+                      </CListGroup>
+                    </CCardBody>
+                  </CCard>
+                </CCol>
+
+                <CCol md={6}>
+                  <CCard className="mb-3">
+                    <CCardHeader>
+                      <h6 className="mb-0">
+                        <CIcon icon={cilStar} className="me-2" />
+                        Additional Information
+                      </h6>
+                    </CCardHeader>
+                    <CCardBody>
+                      <CListGroup flush>
+                        <CListGroupItem className="d-flex justify-content-between align-items-center">
+                          <strong>Ticket ID:</strong>
+                          <span className="text-muted">{selectedTicket._id}</span>
+                        </CListGroupItem>
+                        <CListGroupItem className="d-flex justify-content-between align-items-center">
+                          <strong>Created:</strong>
+                          <span>{formatDate(selectedTicket.createdAt)}</span>
+                        </CListGroupItem>
+                        <CListGroupItem className="d-flex justify-content-between align-items-center">
+                          <strong>Updated:</strong>
+                          <span>{formatDate(selectedTicket.updatedAt)}</span>
+                        </CListGroupItem>
+                      </CListGroup>
+                    </CCardBody>
+                  </CCard>
+                </CCol>
+              </CRow>
+            </div>
+          )}
+        </CModalBody>
+        <CModalFooter>
+          <CButton color="secondary" onClick={closeModal}>
+            <CIcon icon={cilX} className="me-2" />
+            Close
+          </CButton>
+          
+        </CModalFooter>
+      </CModal>
+    </>
   );
 };
 
