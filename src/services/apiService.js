@@ -2,8 +2,8 @@
 
 import authService from './authService'
 
-// const API_BASE_URL = 'http://34.229.93.103/api';
-const API_BASE_URL = 'http://192.168.195.125:7000/api';
+// Use local proxy to avoid CORS issues
+const API_BASE_URL = '/api';
 
 class ApiService {
   // Make an authenticated API request
