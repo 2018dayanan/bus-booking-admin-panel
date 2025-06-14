@@ -1,7 +1,7 @@
 const USE_MOCK_API = false;
 
-// const API_BASE_URL = 'http://34.229.93.103/api'; 
-const API_BASE_URL = 'http://192.168.195.125:7000/api';
+const API_BASE_URL = 'http://34.229.93.103/api'; 
+// const API_BASE_URL = 'http://192.168.195.125:7000/api';
 
 
 let mockApi;
