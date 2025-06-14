@@ -48,6 +48,7 @@ import {
   cilX,
   cilChevronLeft,
   cilChevronRight,
+  cilPlus,
 } from '@coreui/icons';
 import CIcon from '@coreui/icons-react';
 import ticketService from '../../services/ticketService';
@@ -296,15 +297,37 @@ const Tickets = () => {
 
   return (
     <>
-      <CCard>
+      <CCard className="mb-4">
         <CCardHeader>
-          <div className="d-flex justify-content-between align-items-center">
-            <h4 className="mb-0">Ticket Management</h4>
-            <CButton color="primary" onClick={() => navigate('/admin/tickets/add')}>
-              <CIcon icon={cilBusAlt} className="me-2" />
-              Add New Ticket
-            </CButton>
-          </div>
+          <CRow className="align-items-center">
+            <CCol>
+              <h4 className="mb-0">
+                <CIcon icon={cilBusAlt} className="me-2" />
+                All Tickets
+              </h4>
+              <p className="text-muted mb-0">
+                Manage and view all ticket records
+              </p>
+            </CCol>
+            <CCol xs="auto">
+              <CButton 
+                color="success" 
+                onClick={() => navigate('/admin/bookings/add')}
+                className="d-flex align-items-center me-2"
+              >
+                <CIcon icon={cilPlus} className="me-2" />
+                Book Ticket
+              </CButton>
+              <CButton 
+                color="primary" 
+                onClick={() => navigate('/admin/tickets/add')}
+                className="d-flex align-items-center"
+              >
+                <CIcon icon={cilPlus} className="me-2" />
+                Add Ticket
+              </CButton>
+            </CCol>
+          </CRow>
         </CCardHeader>
         <CCardBody>
           <CInputGroup className="mb-3">

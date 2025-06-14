@@ -49,6 +49,7 @@ import {
   cilChevronLeft,
   cilChevronRight,
   cilDescription,
+  cilPlus,
 } from '@coreui/icons';
 import CIcon from '@coreui/icons-react';
 import bookingService from '../../services/bookingService';
@@ -337,15 +338,29 @@ const Bookings = () => {
 
   return (
     <>
-      <CCard>
+      <CCard className="mb-4">
         <CCardHeader>
-          <div className="d-flex justify-content-between align-items-center">
-            <h4 className="mb-0">Booking Management</h4>
-            <CButton color="primary" onClick={() => navigate('/admin/bookings/add')}>
-              <CIcon icon={cilDescription} className="me-2" />
-              Add New Booking
-            </CButton>
-          </div>
+          <CRow className="align-items-center">
+            <CCol>
+              <h4 className="mb-0">
+                <CIcon icon={cilCreditCard} className="me-2" />
+                All Bookings
+              </h4>
+              <p className="text-muted mb-0">
+                Manage and view all booking records
+              </p>
+            </CCol>
+            <CCol xs="auto">
+              <CButton 
+                color="primary" 
+                onClick={() => navigate('/admin/bookings/add')}
+                className="d-flex align-items-center"
+              >
+                <CIcon icon={cilPlus} className="me-2" />
+                Book Ticket
+              </CButton>
+            </CCol>
+          </CRow>
         </CCardHeader>
         <CCardBody>
           <CInputGroup className="mb-3">

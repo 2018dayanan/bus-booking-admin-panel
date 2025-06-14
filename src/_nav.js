@@ -91,6 +91,11 @@ const _nav = [
         name: 'All Bookings',
         to: '/admin/bookings',
       },
+      {
+        component: CNavItem,
+        name: 'Book Ticket',
+        to: '/admin/bookings/add',
+      },
     ],
   },
   {
