@@ -86,13 +86,13 @@ const Bookings = () => {
         if (isMounted) {
           console.log('Full Booking API Response:', response);
           
-          // Handle different response structures
+          // Handle the new API response structure
           let bookingData = [];
           if (response && response.data) {
-            if (Array.isArray(response.data)) {
-              bookingData = response.data;
-            } else if (response.data.data && Array.isArray(response.data.data)) {
+            if (response.data.data && Array.isArray(response.data.data)) {
               bookingData = response.data.data;
+            } else if (Array.isArray(response.data)) {
+              bookingData = response.data;
             } else if (response.data.bookings && Array.isArray(response.data.bookings)) {
               bookingData = response.data.bookings;
             } else if (response.data.results && Array.isArray(response.data.results)) {
@@ -142,15 +142,15 @@ const Bookings = () => {
       }).toLowerCase();
 
       return (
-        booking.userName?.toLowerCase().includes(lowerSearch) ||
-        booking.userEmail?.toLowerCase().includes(lowerSearch) ||
-        booking.ticketId?.toLowerCase().includes(lowerSearch) ||
+        booking.userInfo?.name?.toLowerCase().includes(lowerSearch) ||
+        booking.userInfo?.email?.toLowerCase().includes(lowerSearch) ||
+        booking.userInfo?.phone?.toLowerCase().includes(lowerSearch) ||
         booking.transactionId?.toLowerCase().includes(lowerSearch) ||
         booking.gateway?.toLowerCase().includes(lowerSearch) ||
         booking.status?.toLowerCase().includes(lowerSearch) ||
-        booking.busName?.toLowerCase().includes(lowerSearch) ||
-        booking.from?.toLowerCase().includes(lowerSearch) ||
-        booking.to?.toLowerCase().includes(lowerSearch) ||
+        booking.scheduleInfo?.bussName?.toLowerCase().includes(lowerSearch) ||
+        booking.scheduleInfo?.route?.from?.toLowerCase().includes(lowerSearch) ||
+        booking.scheduleInfo?.route?.to?.toLowerCase().includes(lowerSearch) ||
         formattedDate.includes(lowerSearch)
       );
     });
@@ -303,10 +303,10 @@ const Bookings = () => {
                 
                 let bookingData = [];
                 if (response && response.data) {
-                  if (Array.isArray(response.data)) {
-                    bookingData = response.data;
-                  } else if (response.data.data && Array.isArray(response.data.data)) {
+                  if (response.data.data && Array.isArray(response.data.data)) {
                     bookingData = response.data.data;
+                  } else if (Array.isArray(response.data)) {
+                    bookingData = response.data;
                   } else if (response.data.bookings && Array.isArray(response.data.bookings)) {
                     bookingData = response.data.bookings;
                   } else if (response.data.results && Array.isArray(response.data.results)) {
@@ -377,9 +377,9 @@ const Bookings = () => {
                 <CTableRow key={booking._id}>
                   <CTableDataCell>
                     <div className="d-flex align-items-center">
-                      <CAvatar src={booking.thumbnail} size="md" className="me-3" />
+                      <CAvatar src={booking.scheduleInfo?.thumbnail} size="md" className="me-3" />
                       <div>
-                        <div className="fw-semibold">{booking.ticketId}</div>
+                        <div className="fw-semibold">Booking #{booking._id.slice(-6)}</div>
                         <div className="small text-muted">
                           {booking.seats?.join(', ')} • {booking.transactionId}
                         </div>
@@ -390,8 +390,8 @@ const Bookings = () => {
                     <div className="d-flex align-items-center">
                       <CIcon icon={cilUser} className="me-2" />
                       <div>
-                        <div className="fw-semibold">{booking.userName}</div>
-                        <div className="small text-muted">{booking.userEmail}</div>
+                        <div className="fw-semibold">{booking.userInfo?.name || 'N/A'}</div>
+                        <div className="small text-muted">{booking.userInfo?.email || 'N/A'}</div>
                       </div>
                     </div>
                   </CTableDataCell>
@@ -399,8 +399,8 @@ const Bookings = () => {
                     <div className="d-flex align-items-center">
                       <CIcon icon={cilLocationPin} className="me-2" />
                       <div>
-                        <div className="small">{booking.from}</div>
-                        <div className="small text-muted">→ {booking.to}</div>
+                        <div className="small">{booking.scheduleInfo?.route?.from || 'N/A'}</div>
+                        <div className="small text-muted">→ {booking.scheduleInfo?.route?.to || 'N/A'}</div>
                       </div>
                     </div>
                   </CTableDataCell>
@@ -515,10 +515,10 @@ const Bookings = () => {
               <CListGroupItem>
                 <CRow>
                   <CCol md={6}>
-                    <strong>Ticket ID:</strong>
+                    <strong>Booking ID:</strong>
                   </CCol>
                   <CCol md={6}>
-                    <CBadge color="primary">{selectedBooking.ticketId}</CBadge>
+                    <CBadge color="primary">{selectedBooking._id}</CBadge>
                   </CCol>
                 </CRow>
               </CListGroupItem>
@@ -540,9 +540,18 @@ const Bookings = () => {
                     <strong>User Information:</strong>
                   </CCol>
                   <CCol md={6}>
-                    <div>{selectedBooking.userName}</div>
-                    <div className="text-muted">{selectedBooking.userEmail}</div>
-                    <div className="text-muted">{selectedBooking.userPhone}</div>
+                    <div className="d-flex align-items-center mb-2">
+                      <CAvatar src={selectedBooking.userInfo?.profilePicture} size="sm" className="me-2" />
+                      <div>
+                        <div className="fw-bold">{selectedBooking.userInfo?.name || 'N/A'}</div>
+                        <div className="text-muted">{selectedBooking.userInfo?.email || 'N/A'}</div>
+                        <div className="text-muted">{selectedBooking.userInfo?.phone || 'N/A'}</div>
+                        <div className="text-muted">{selectedBooking.userInfo?.address || 'N/A'}</div>
+                        <div className="text-muted">Gender: {selectedBooking.userInfo?.gender || 'N/A'}</div>
+                        <div className="text-muted">Role: {selectedBooking.userInfo?.role || 'N/A'}</div>
+                        <div className="text-muted">Reward Points: {selectedBooking.userInfo?.rewardPoints || 0}</div>
+                      </div>
+                    </div>
                   </CCol>
                 </CRow>
               </CListGroupItem>
@@ -553,8 +562,16 @@ const Bookings = () => {
                     <strong>Bus Information:</strong>
                   </CCol>
                   <CCol md={6}>
-                    <div>{selectedBooking.busName}</div>
-                    <div className="text-muted">Bus No: {selectedBooking.busNo}</div>
+                    <div className="d-flex align-items-center mb-2">
+                      <CAvatar src={selectedBooking.scheduleInfo?.thumbnail} size="sm" className="me-2" />
+                      <div>
+                        <div className="fw-bold">{selectedBooking.scheduleInfo?.bussName || 'N/A'}</div>
+                        <div className="text-muted">Bus No: {selectedBooking.scheduleInfo?.bussNo || 'N/A'}</div>
+                        <div className="text-muted">Vehicle Type: {selectedBooking.scheduleInfo?.vehicleType || 'N/A'}</div>
+                        <div className="text-muted">Total Seats: {selectedBooking.scheduleInfo?.totalSeats || 'N/A'}</div>
+                        <div className="text-muted">Reward Points: {selectedBooking.scheduleInfo?.rewardPoints || 0}</div>
+                      </div>
+                    </div>
                   </CCol>
                 </CRow>
               </CListGroupItem>
@@ -562,14 +579,35 @@ const Bookings = () => {
               <CListGroupItem>
                 <CRow>
                   <CCol md={6}>
-                    <strong>Route:</strong>
+                    <strong>Operator Information:</strong>
                   </CCol>
                   <CCol md={6}>
-                    <div>{selectedBooking.from} → {selectedBooking.to}</div>
-                    <div className="text-muted">
-                      {selectedBooking.departureTime} - {selectedBooking.arrivalTime}
+                    <div>
+                      <div>Name: {selectedBooking.scheduleInfo?.operatorName || 'N/A'}</div>
+                      <div className="text-muted">Role: {selectedBooking.scheduleInfo?.operatorRole || 'N/A'}</div>
                     </div>
-                    <div className="text-muted">Date: {selectedBooking.date}</div>
+                  </CCol>
+                </CRow>
+              </CListGroupItem>
+              
+              <CListGroupItem>
+                <CRow>
+                  <CCol md={6}>
+                    <strong>Route Details:</strong>
+                  </CCol>
+                  <CCol md={6}>
+                    <div>
+                      <div className="fw-bold">{selectedBooking.scheduleInfo?.route?.from || 'N/A'} → {selectedBooking.scheduleInfo?.route?.to || 'N/A'}</div>
+                      <div className="text-muted">
+                        Departure: {selectedBooking.scheduleInfo?.departureTime || 'N/A'}
+                      </div>
+                      <div className="text-muted">
+                        Arrival: {selectedBooking.scheduleInfo?.arrivalTime || 'N/A'}
+                      </div>
+                      <div className="text-muted">Date: {selectedBooking.scheduleInfo?.date || 'N/A'}</div>
+                      <div className="text-muted">Duration: {selectedBooking.scheduleInfo?.totalTimeTaken || 'N/A'}</div>
+                      <div className="text-muted">Shift: {selectedBooking.scheduleInfo?.shift || 'N/A'}</div>
+                    </div>
                   </CCol>
                 </CRow>
               </CListGroupItem>
@@ -580,7 +618,7 @@ const Bookings = () => {
                     <strong>Seats:</strong>
                   </CCol>
                   <CCol md={6}>
-                    <CBadge color="success">{selectedBooking.seats?.join(', ')}</CBadge>
+                    <CBadge color="success">{selectedBooking.seats?.join(', ') || 'N/A'}</CBadge>
                   </CCol>
                 </CRow>
               </CListGroupItem>
@@ -588,15 +626,18 @@ const Bookings = () => {
               <CListGroupItem>
                 <CRow>
                   <CCol md={6}>
-                    <strong>Amount:</strong>
+                    <strong>Pricing:</strong>
                   </CCol>
                   <CCol md={6}>
-                    <div className="fw-bold">{formatCurrency(selectedBooking.totalAmount)}</div>
-                    {selectedBooking.refundAmount > 0 && (
-                      <div className="text-danger">
-                        Refund: {formatCurrency(selectedBooking.refundAmount)}
-                      </div>
-                    )}
+                    <div>
+                      <div className="fw-bold">Total Amount: {formatCurrency(selectedBooking.totalAmount)}</div>
+                      <div className="text-muted">Schedule Price: {formatCurrency(selectedBooking.scheduleInfo?.price || 0)}</div>
+                      {selectedBooking.refundAmount > 0 && (
+                        <div className="text-danger">
+                          Refund Amount: {formatCurrency(selectedBooking.refundAmount)}
+                        </div>
+                      )}
+                    </div>
                   </CCol>
                 </CRow>
               </CListGroupItem>
@@ -608,7 +649,7 @@ const Bookings = () => {
                   </CCol>
                   <CCol md={6}>
                     <CBadge color={getStatusBadgeColor(selectedBooking.status)}>
-                      {selectedBooking.status?.toUpperCase()}
+                      {selectedBooking.status?.toUpperCase() || 'N/A'}
                     </CBadge>
                   </CCol>
                 </CRow>
@@ -621,7 +662,7 @@ const Bookings = () => {
                   </CCol>
                   <CCol md={6}>
                     <CBadge color={getRefundStatusBadgeColor(selectedBooking.refundStatus)}>
-                      {selectedBooking.refundStatus?.toUpperCase()}
+                      {selectedBooking.refundStatus?.toUpperCase() || 'N/A'}
                     </CBadge>
                   </CCol>
                 </CRow>
@@ -634,7 +675,7 @@ const Bookings = () => {
                   </CCol>
                   <CCol md={6}>
                     <CBadge color={getGatewayBadgeColor(selectedBooking.gateway)}>
-                      {selectedBooking.gateway?.toUpperCase()}
+                      {selectedBooking.gateway?.toUpperCase() || 'N/A'}
                     </CBadge>
                   </CCol>
                 </CRow>
@@ -643,32 +684,14 @@ const Bookings = () => {
               <CListGroupItem>
                 <CRow>
                   <CCol md={6}>
-                    <strong>Booked At:</strong>
+                    <strong>Timestamps:</strong>
                   </CCol>
                   <CCol md={6}>
-                    {formatDate(selectedBooking.bookedAt)}
-                  </CCol>
-                </CRow>
-              </CListGroupItem>
-              
-              <CListGroupItem>
-                <CRow>
-                  <CCol md={6}>
-                    <strong>Created At:</strong>
-                  </CCol>
-                  <CCol md={6}>
-                    {formatDate(selectedBooking.createdAt)}
-                  </CCol>
-                </CRow>
-              </CListGroupItem>
-              
-              <CListGroupItem>
-                <CRow>
-                  <CCol md={6}>
-                    <strong>Updated At:</strong>
-                  </CCol>
-                  <CCol md={6}>
-                    {formatDate(selectedBooking.updatedAt)}
+                    <div>
+                      <div className="text-muted">Booked At: {formatDate(selectedBooking.bookedAt)}</div>
+                      <div className="text-muted">Created At: {formatDate(selectedBooking.createdAt)}</div>
+                      <div className="text-muted">Updated At: {formatDate(selectedBooking.updatedAt)}</div>
+                    </div>
                   </CCol>
                 </CRow>
               </CListGroupItem>
