@@ -27,40 +27,6 @@ import { cilOptions, cilBusAlt, cilUser, cilCalendar, cilLocationPin, cilSearch 
 import CIcon from '@coreui/icons-react';
 import ticketService from '../../services/ticketService';
 
-// Mock data for fallback
-const mockTickets = [
-  {
-    _id: '1',
-    bussName: 'Express Bus',
-    thumbnail: 'https://via.placeholder.com/40',
-    departureTime: '10:00 AM',
-    arrivalTime: '2:00 PM',
-    operatorName: 'John Doe',
-    operatorRole: 'Driver',
-    vehicleType: 'Deluxe',
-    bussNo: 'ABC-123',
-    date: '2025-06-15',
-    totalTimeTaken: '4h',
-    route: { from: 'New York', to: 'Boston' },
-    shift: 'Day',
-  },
-  {
-    _id: '2',
-    bussName: 'City Liner',
-    thumbnail: 'https://via.placeholder.com/40',
-    departureTime: '8:00 PM',
-    arrivalTime: '11:00 PM',
-    operatorName: 'Jane Smith',
-    operatorRole: 'Driver',
-    vehicleType: 'Standard',
-    bussNo: 'XYZ-789',
-    date: '2025-06-16',
-    totalTimeTaken: '3h',
-    route: { from: 'Boston', to: 'New York' },
-    shift: 'Night',
-  },
-];
-
 const Tickets = () => {
   const [tickets, setTickets] = useState([]);
   const [filteredTickets, setFilteredTickets] = useState([]);
@@ -86,16 +52,36 @@ const Tickets = () => {
         const response = await Promise.race([ticketService.getAllTickets(), timeoutPromise]);
 
         if (isMounted) {
-          const ticketData = Array.isArray(response.data) ? response.data : response;
-          setTickets(ticketData.length ? ticketData : mockTickets);
-          setFilteredTickets(ticketData.length ? ticketData : mockTickets);
+          console.log('Full Ticket API Response:', response);
+          
+          // Handle different response structures
+          let ticketData = [];
+          if (response && response.data) {
+            if (Array.isArray(response.data)) {
+              ticketData = response.data;
+            } else if (response.data.data && Array.isArray(response.data.data)) {
+              ticketData = response.data.data;
+            } else if (response.data.tickets && Array.isArray(response.data.tickets)) {
+              ticketData = response.data.tickets;
+            } else if (response.data.results && Array.isArray(response.data.results)) {
+              ticketData = response.data.results;
+            }
+          }
+          
+          console.log('Processed ticket data:', ticketData);
+          
+          if (ticketData.length > 0) {
+            setTickets(ticketData);
+            setFilteredTickets(ticketData);
+          } else {
+            setError('No tickets found in the system');
+          }
           setLoading(false);
         }
       } catch (apiError) {
-        console.warn('API call failed, using mock data:', apiError.message);
+        console.error('API call failed:', apiError.message);
         if (isMounted) {
-          setTickets(mockTickets);
-          setFilteredTickets(mockTickets);
+          setError(`Failed to fetch tickets: ${apiError.message}`);
           setLoading(false);
         }
       }
@@ -194,7 +180,7 @@ const Tickets = () => {
   if (loading) {
     return (
       <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '400px' }}>
-        <CSpinner color="primary" variant="grow" />
+        <CSpinner color="primary" />
         <span className="ms-3">Loading tickets...</span>
       </div>
     );
@@ -213,14 +199,30 @@ const Tickets = () => {
               setLoading(true);
               try {
                 const response = await ticketService.getAllTickets();
-                const ticketData = Array.isArray(response.data) ? response.data : response;
-                setTickets(ticketData.length ? ticketData : mockTickets);
-                setFilteredTickets(ticketData.length ? ticketData : mockTickets);
-                setError(null);
+                console.log('Retry Ticket API Response:', response);
+                
+                let ticketData = [];
+                if (response && response.data) {
+                  if (Array.isArray(response.data)) {
+                    ticketData = response.data;
+                  } else if (response.data.data && Array.isArray(response.data.data)) {
+                    ticketData = response.data.data;
+                  } else if (response.data.tickets && Array.isArray(response.data.tickets)) {
+                    ticketData = response.data.tickets;
+                  } else if (response.data.results && Array.isArray(response.data.results)) {
+                    ticketData = response.data.results;
+                  }
+                }
+                
+                if (ticketData.length > 0) {
+                  setTickets(ticketData);
+                  setFilteredTickets(ticketData);
+                  setError(null);
+                } else {
+                  setError('No tickets found in the system');
+                }
               } catch (apiError) {
-                setTickets(mockTickets);
-                setFilteredTickets(mockTickets);
-                setError('Failed to fetch tickets.');
+                setError(`Failed to fetch tickets: ${apiError.message}`);
               } finally {
                 setLoading(false);
               }
@@ -255,6 +257,7 @@ const Tickets = () => {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </CInputGroup>
+
         <CTable align="middle" className="mb-0 border" hover responsive>
           <CTableHead color="light">
             <CTableRow>
@@ -292,20 +295,15 @@ const Tickets = () => {
                   </div>
                 </CTableDataCell>
                 <CTableDataCell>
-                  <CBadge color="primary" className="text-capitalize">
-                    {ticket.vehicleType}
-                  </CBadge>
+                  <CBadge color="info">{ticket.vehicleType}</CBadge>
                 </CTableDataCell>
                 <CTableDataCell>
-                  <div className="fw-semibold">{ticket.bussNo}</div>
+                  <span className="fw-semibold">{ticket.bussNo}</span>
                 </CTableDataCell>
                 <CTableDataCell>
                   <div className="d-flex align-items-center">
                     <CIcon icon={cilCalendar} className="me-2" />
-                    <div>
-                      <div className="fw-semibold">{formatDate(ticket.date)}</div>
-                      <div className="small text-muted">{ticket.totalTimeTaken}</div>
-                    </div>
+                    <div className="small">{formatDate(ticket.date)}</div>
                   </div>
                 </CTableDataCell>
                 <CTableDataCell>
@@ -318,8 +316,8 @@ const Tickets = () => {
                   </div>
                 </CTableDataCell>
                 <CTableDataCell>
-                  <CBadge color={getShiftBadgeColor(ticket.shift)} className="text-capitalize">
-                    {ticket.shift}
+                  <CBadge color={getShiftBadgeColor(ticket.shift)}>
+                    {ticket.shift?.toUpperCase() || 'N/A'}
                   </CBadge>
                 </CTableDataCell>
                 <CTableDataCell className="text-end">
@@ -347,7 +345,7 @@ const Tickets = () => {
             <CIcon icon={cilBusAlt} size="3xl" className="text-muted mb-3" />
             <h5 className="text-muted">{searchTerm ? 'No tickets match your search' : 'No tickets found'}</h5>
             <p className="text-muted">
-              {searchTerm ? 'Try a different search term.' : 'Start by adding your first ticket.'}
+              {searchTerm ? 'Try a different search term.' : 'No tickets are currently available in the system.'}
             </p>
           </div>
         )}
