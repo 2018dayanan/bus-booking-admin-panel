@@ -17,7 +17,7 @@ export const API_BASE_URL = BASE_URLS[ENV] || BASE_URLS.development;
 // API Endpoints
 export const API_ENDPOINTS = {
   // Auth endpoints
-  LOGIN: '/admin/login',
+  LOGIN: '/login',
   REGISTER: '/admin/register',
   LOGOUT: '/admin/logout',
   VERIFY_TOKEN: '/verify-token',

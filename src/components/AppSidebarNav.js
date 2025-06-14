@@ -7,7 +7,7 @@ import 'simplebar-react/dist/simplebar.min.css'
 
 import { CBadge, CNavLink, CSidebarNav } from '@coreui/react'
 
-export const AppSidebarNav = ({ items }) => {
+export const AppSidebarNav = ({ items, onLogout }) => {
   const navLink = (name, icon, badge, indent = false) => {
     return (
       <>
@@ -31,6 +31,15 @@ export const AppSidebarNav = ({ items }) => {
   const navItem = (item, index, indent = false) => {
     const { component, name, badge, icon, ...rest } = item
     const Component = component
+    
+    // Handle logout functionality
+    const handleClick = (e) => {
+      if (name === 'Logout' && onLogout) {
+        e.preventDefault()
+        onLogout()
+      }
+    }
+    
     return (
       <Component as="div" key={index}>
         {rest.to || rest.href ? (
@@ -38,6 +47,7 @@ export const AppSidebarNav = ({ items }) => {
             {...(rest.to && { as: NavLink })}
             {...(rest.href && { target: '_blank', rel: 'noopener noreferrer' })}
             {...rest}
+            onClick={handleClick}
           >
             {navLink(name, icon, badge, indent)}
           </CNavLink>
@@ -70,4 +80,5 @@ export const AppSidebarNav = ({ items }) => {
 
 AppSidebarNav.propTypes = {
   items: PropTypes.arrayOf(PropTypes.any).isRequired,
+  onLogout: PropTypes.func,
 }

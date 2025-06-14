@@ -1,5 +1,7 @@
 import React from 'react'
 import classNames from 'classnames'
+import { useDispatch } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
 
 import {
   CAvatar,
@@ -41,6 +43,7 @@ import {
   cilPeople,
   cilUser,
   cilUserFemale,
+  cilAccountLogout,
 } from '@coreui/icons'
 
 import avatar1 from 'src/assets/images/avatars/1.jpg'
@@ -53,8 +56,23 @@ import avatar6 from 'src/assets/images/avatars/6.jpg'
 import WidgetsBrand from '../widgets/WidgetsBrand'
 import WidgetsDropdown from '../widgets/WidgetsDropdown'
 import MainChart from './MainChart'
+import authService from '../../services/authService'
 
 const Dashboard = () => {
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+
+  const handleLogout = () => {
+    // Call auth service logout
+    authService.logout()
+    
+    // Dispatch logout action
+    dispatch({ type: 'LOGOUT' })
+    
+    // Navigate to login page
+    navigate('/login')
+  }
+
   const progressExample = [
     { title: 'Visits', value: '29.703 Users', percent: 40, color: 'success' },
     { title: 'Unique', value: '24.093 Users', percent: 20, color: 'info' },
@@ -178,6 +196,19 @@ const Dashboard = () => {
 
   return (
     <>
+      <CRow className="mb-4">
+        <CCol xs="12" className="d-flex justify-content-end">
+          <CButton 
+            color="danger" 
+            variant="outline" 
+            onClick={handleLogout}
+            className="d-flex align-items-center"
+          >
+            <CIcon icon={cilAccountLogout} className="me-2" />
+            Logout
+          </CButton>
+        </CCol>
+      </CRow>
       <WidgetsDropdown className="mb-4" />
       <CCard className="mb-4">
         {/* <CCardBody>

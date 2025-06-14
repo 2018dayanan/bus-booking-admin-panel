@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react'
-import { NavLink } from 'react-router-dom'
+import { NavLink, useNavigate } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import {
   CContainer,
@@ -23,17 +23,31 @@ import {
   cilMenu,
   cilMoon,
   cilSun,
+  cilAccountLogout,
 } from '@coreui/icons'
 
 import { AppBreadcrumb } from './index'
 import { AppHeaderDropdown } from './header/index'
+import authService from '../services/authService'
 
 const AppHeader = () => {
   const headerRef = useRef()
   const { colorMode, setColorMode } = useColorModes('coreui-free-react-admin-template-theme')
+  const navigate = useNavigate()
 
   const dispatch = useDispatch()
   const sidebarShow = useSelector((state) => state.sidebarShow)
+
+  const handleLogout = () => {
+    // Call auth service logout
+    authService.logout()
+    
+    // Dispatch logout action
+    dispatch({ type: 'LOGOUT' })
+    
+    // Navigate to login page
+    navigate('/login')
+  }
 
   useEffect(() => {
     document.addEventListener('scroll', () => {
@@ -78,6 +92,11 @@ const AppHeader = () => {
           <CNavItem>
             <CNavLink href="#">
               <CIcon icon={cilEnvelopeOpen} size="lg" />
+            </CNavLink>
+          </CNavItem>
+          <CNavItem>
+            <CNavLink onClick={handleLogout} style={{ cursor: 'pointer' }}>
+              <CIcon icon={cilAccountLogout} size="lg" />
             </CNavLink>
           </CNavItem>
         </CHeaderNav>

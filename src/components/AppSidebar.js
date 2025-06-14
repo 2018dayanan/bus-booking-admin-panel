@@ -1,5 +1,6 @@
 import React from 'react'
 import { useSelector, useDispatch } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
 
 import {
   CCloseButton,
@@ -8,6 +9,10 @@ import {
   CSidebarFooter,
   CSidebarHeader,
   CSidebarToggler,
+  CSidebarNav,
+  CNavItem,
+  CNavTitle,
+  CNavGroup,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 
@@ -17,11 +22,26 @@ import { AppSidebarNav } from './AppSidebarNav'
 // import { sygnet } from 'src/assets/brand/sygnet'
 
 import navigation from '../_nav'
+import authService from '../services/authService'
+
+import SimpleBar from 'simplebar-react'
 
 const AppSidebar = () => {
   const dispatch = useDispatch()
+  const navigate = useNavigate()
   const unfoldable = useSelector((state) => state.sidebarUnfoldable)
   const sidebarShow = useSelector((state) => state.sidebarShow)
+
+  const handleLogout = () => {
+    // Call auth service logout
+    authService.logout()
+    
+    // Dispatch logout action
+    dispatch({ type: 'LOGOUT' })
+    
+    // Navigate to login page
+    navigate('/login')
+  }
 
   return (
     <CSidebar
@@ -45,7 +65,11 @@ const AppSidebar = () => {
           onClick={() => dispatch({ type: 'set', sidebarShow: false })}
         />
       </CSidebarHeader>
-      <AppSidebarNav items={navigation} />
+      <CSidebarNav>
+        <SimpleBar>
+          <AppSidebarNav items={navigation} onLogout={handleLogout} />
+        </SimpleBar>
+      </CSidebarNav>
       <CSidebarFooter className="border-top d-none d-lg-flex">
         <CSidebarToggler
           onClick={() => dispatch({ type: 'set', sidebarUnfoldable: !unfoldable })}
