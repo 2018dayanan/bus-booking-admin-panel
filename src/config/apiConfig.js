@@ -38,6 +38,16 @@ export const API_ENDPOINTS = {
   GET_TICKETS_BY_OPERATOR: '/admin/tickets/operator',
   GET_TICKETS_BY_DATE_RANGE: '/admin/tickets/date-range',
   GET_TICKETS_BY_ROUTE: '/admin/tickets/route',
+  
+  // Booking endpoints
+  GET_ALL_BOOKINGS: '/admin/getAllBookings',
+  CREATE_BOOKING: '/admin/createBooking',
+  GET_BOOKING_BY_ID: '/admin/bookings',
+  UPDATE_BOOKING: '/admin/updateBooking',
+  DELETE_BOOKING: '/admin/deleteBooking',
+  GET_BOOKINGS_BY_USER: '/admin/bookings/user',
+  GET_BOOKINGS_BY_STATUS: '/admin/bookings/status',
+  GET_BOOKINGS_BY_DATE_RANGE: '/admin/bookings/date-range',
 };
 
 // API Configuration

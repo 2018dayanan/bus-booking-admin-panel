@@ -15,6 +15,7 @@ import {
   cilStar,
   cilUser,
   cilBusAlt,
+  cilCreditCard,
 } from '@coreui/icons'
 import { CNavGroup, CNavItem, CNavTitle } from '@coreui/react'
 
@@ -75,6 +76,19 @@ const _nav = [
         component: CNavItem,
         name: 'Add Tickets',
         to: '/admin/tickets/add',
+      },
+    ],
+  },
+  {
+    component: CNavGroup,
+    name: 'Booking Management',
+    to: '/admin/bookings',
+    icon: <CIcon icon={cilCreditCard} customClassName="nav-icon" />,
+    items: [
+      {
+        component: CNavItem,
+        name: 'Bookings',
+        to: '/admin/bookings',
       },
     ],
   },

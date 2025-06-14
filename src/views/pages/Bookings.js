@@ -1,0 +1,697 @@
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import {
+  CCard,
+  CCardBody,
+  CCardHeader,
+  CTable,
+  CTableHead,
+  CTableRow,
+  CTableHeaderCell,
+  CTableBody,
+  CTableDataCell,
+  CAvatar,
+  CButton,
+  CDropdown,
+  CDropdownToggle,
+  CDropdownMenu,
+  CDropdownItem,
+  CBadge,
+  CSpinner,
+  CAlert,
+  CFormInput,
+  CInputGroup,
+  CInputGroupText,
+  CModal,
+  CModalHeader,
+  CModalTitle,
+  CModalBody,
+  CModalFooter,
+  CListGroup,
+  CListGroupItem,
+  CRow,
+  CCol,
+  CPagination,
+  CPaginationItem,
+} from '@coreui/react';
+import { 
+  cilOptions, 
+  cilUser, 
+  cilCalendar, 
+  cilLocationPin, 
+  cilSearch,
+  cilClock,
+  cilMoney,
+  cilCreditCard,
+  cilBusAlt,
+  cilStar,
+  cilX,
+  cilChevronLeft,
+  cilChevronRight,
+  cilDescription,
+} from '@coreui/icons';
+import CIcon from '@coreui/icons-react';
+import bookingService from '../../services/bookingService';
+
+const Bookings = () => {
+  const [bookings, setBookings] = useState([]);
+  const [filteredBookings, setFilteredBookings] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [selectedBooking, setSelectedBooking] = useState(null);
+  const [showDropdown, setShowDropdown] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [bookingsPerPage] = useState(10);
+  
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchBookings = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const timeoutPromise = new Promise((_, reject) => {
+          setTimeout(() => reject(new Error('Request timed out')), 10000);
+        });
+
+        const response = await Promise.race([bookingService.getAllBookings(), timeoutPromise]);
+
+        if (isMounted) {
+          console.log('Full Booking API Response:', response);
+          
+          // Handle different response structures
+          let bookingData = [];
+          if (response && response.data) {
+            if (Array.isArray(response.data)) {
+              bookingData = response.data;
+            } else if (response.data.data && Array.isArray(response.data.data)) {
+              bookingData = response.data.data;
+            } else if (response.data.bookings && Array.isArray(response.data.bookings)) {
+              bookingData = response.data.bookings;
+            } else if (response.data.results && Array.isArray(response.data.results)) {
+              bookingData = response.data.results;
+            }
+          }
+          
+          console.log('Processed booking data:', bookingData);
+          
+          if (bookingData.length > 0) {
+            setBookings(bookingData);
+            setFilteredBookings(bookingData);
+          } else {
+            setError('No bookings found in the system');
+          }
+          setLoading(false);
+        }
+      } catch (apiError) {
+        console.error('API call failed:', apiError.message);
+        if (isMounted) {
+          setError(`Failed to fetch bookings: ${apiError.message}`);
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchBookings();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  // Filter bookings based on search term
+  useEffect(() => {
+    if (!searchTerm) {
+      setFilteredBookings(bookings);
+      return;
+    }
+
+    const lowerSearch = searchTerm.toLowerCase();
+    const filtered = bookings.filter((booking) => {
+      const formattedDate = new Date(booking.bookedAt).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+      }).toLowerCase();
+
+      return (
+        booking.userName?.toLowerCase().includes(lowerSearch) ||
+        booking.userEmail?.toLowerCase().includes(lowerSearch) ||
+        booking.ticketId?.toLowerCase().includes(lowerSearch) ||
+        booking.transactionId?.toLowerCase().includes(lowerSearch) ||
+        booking.gateway?.toLowerCase().includes(lowerSearch) ||
+        booking.status?.toLowerCase().includes(lowerSearch) ||
+        booking.busName?.toLowerCase().includes(lowerSearch) ||
+        booking.from?.toLowerCase().includes(lowerSearch) ||
+        booking.to?.toLowerCase().includes(lowerSearch) ||
+        formattedDate.includes(lowerSearch)
+      );
+    });
+
+    setFilteredBookings(filtered);
+  }, [searchTerm, bookings]);
+
+  const handleDropdown = (visible, bookingId) => {
+    setShowDropdown(visible ? bookingId : null);
+  };
+
+  const handleAction = async (action, booking) => {
+    setSelectedBooking(booking);
+    setShowDropdown(null);
+
+    try {
+      switch (action) {
+        case 'view':
+          setShowModal(true);
+          break;
+        case 'edit':
+          navigate(`/admin/bookings/edit/${booking._id}`, {
+            state: { bookingData: booking }
+          });
+          break;
+        case 'delete':
+          if (window.confirm(`Are you sure you want to delete booking ${booking.ticketId}?`)) {
+            await bookingService.deleteBooking(booking._id);
+            alert(`Successfully deleted booking ${booking.ticketId}`);
+            const updatedBookings = bookings.filter((b) => b._id !== booking._id);
+            setBookings(updatedBookings);
+            setFilteredBookings(updatedBookings);
+          }
+          break;
+        default:
+          break;
+      }
+    } catch (error) {
+      console.error('Error handling action:', error);
+      alert(`Error: ${error.message}`);
+    }
+  };
+
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  };
+
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: 'INR',
+    }).format(amount);
+  };
+
+  const getStatusBadgeColor = (status) => {
+    switch (status?.toLowerCase()) {
+      case 'booked':
+        return 'primary';
+      case 'confirmed':
+        return 'success';
+      case 'pending':
+        return 'warning';
+      case 'cancelled':
+        return 'danger';
+      case 'completed':
+        return 'info';
+      default:
+        return 'secondary';
+    }
+  };
+
+  const getRefundStatusBadgeColor = (refundStatus) => {
+    switch (refundStatus?.toLowerCase()) {
+      case 'none':
+        return 'secondary';
+      case 'pending':
+        return 'warning';
+      case 'processed':
+        return 'success';
+      case 'failed':
+        return 'danger';
+      default:
+        return 'secondary';
+    }
+  };
+
+  const getGatewayBadgeColor = (gateway) => {
+    switch (gateway?.toLowerCase()) {
+      case 'esewa':
+        return 'success';
+      case 'khalti':
+        return 'primary';
+      case 'paypal':
+        return 'info';
+      default:
+        return 'secondary';
+    }
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+    setSelectedBooking(null);
+  };
+
+  // Pagination logic
+  const indexOfLastBooking = currentPage * bookingsPerPage;
+  const indexOfFirstBooking = indexOfLastBooking - bookingsPerPage;
+  const currentBookings = filteredBookings.slice(indexOfFirstBooking, indexOfLastBooking);
+  const totalPages = Math.ceil(filteredBookings.length / bookingsPerPage);
+
+  // Change page
+  const paginate = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
+  // Reset to first page when search changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm]);
+
+  if (loading) {
+    return (
+      <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '400px' }}>
+        <CSpinner color="primary" />
+        <span className="ms-3">Loading bookings...</span>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <CAlert color="danger" className="d-flex align-items-center">
+        <CIcon icon={cilDescription} className="me-2" />
+        <div>
+          <strong>Error:</strong> {error}
+          <CButton
+            color="link"
+            className="p-0 ms-2"
+            onClick={async () => {
+              setLoading(true);
+              try {
+                const response = await bookingService.getAllBookings();
+                console.log('Retry Booking API Response:', response);
+                
+                let bookingData = [];
+                if (response && response.data) {
+                  if (Array.isArray(response.data)) {
+                    bookingData = response.data;
+                  } else if (response.data.data && Array.isArray(response.data.data)) {
+                    bookingData = response.data.data;
+                  } else if (response.data.bookings && Array.isArray(response.data.bookings)) {
+                    bookingData = response.data.bookings;
+                  } else if (response.data.results && Array.isArray(response.data.results)) {
+                    bookingData = response.data.results;
+                  }
+                }
+                
+                if (bookingData.length > 0) {
+                  setBookings(bookingData);
+                  setFilteredBookings(bookingData);
+                  setError(null);
+                } else {
+                  setError('No bookings found in the system');
+                }
+              } catch (apiError) {
+                setError(`Failed to fetch bookings: ${apiError.message}`);
+              } finally {
+                setLoading(false);
+              }
+            }}
+          >
+            Try again
+          </CButton>
+        </div>
+      </CAlert>
+    );
+  }
+
+  return (
+    <>
+      <CCard>
+        <CCardHeader>
+          <div className="d-flex justify-content-between align-items-center">
+            <h4 className="mb-0">Booking Management</h4>
+            <CButton color="primary" onClick={() => navigate('/admin/bookings/add')}>
+              <CIcon icon={cilDescription} className="me-2" />
+              Add New Booking
+            </CButton>
+          </div>
+        </CCardHeader>
+        <CCardBody>
+          <CInputGroup className="mb-3">
+            <CInputGroupText>
+              <CIcon icon={cilSearch} />
+            </CInputGroupText>
+            <CFormInput
+              placeholder="Search by user name, email, ticket ID, transaction ID, gateway, status, bus name, route, or date..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </CInputGroup>
+
+          <CTable align="middle" className="mb-0 border" hover responsive>
+            <CTableHead color="light">
+              <CTableRow>
+                <CTableHeaderCell>Booking Info</CTableHeaderCell>
+                <CTableHeaderCell>User</CTableHeaderCell>
+                <CTableHeaderCell>Route</CTableHeaderCell>
+                <CTableHeaderCell>Amount</CTableHeaderCell>
+                <CTableHeaderCell>Status</CTableHeaderCell>
+                <CTableHeaderCell>Gateway</CTableHeaderCell>
+                <CTableHeaderCell>Date</CTableHeaderCell>
+                <CTableHeaderCell className="text-end">Actions</CTableHeaderCell>
+              </CTableRow>
+            </CTableHead>
+            <CTableBody>
+              {currentBookings.map((booking) => (
+                <CTableRow key={booking._id}>
+                  <CTableDataCell>
+                    <div className="d-flex align-items-center">
+                      <CAvatar src={booking.thumbnail} size="md" className="me-3" />
+                      <div>
+                        <div className="fw-semibold">{booking.ticketId}</div>
+                        <div className="small text-muted">
+                          {booking.seats?.join(', ')} • {booking.transactionId}
+                        </div>
+                      </div>
+                    </div>
+                  </CTableDataCell>
+                  <CTableDataCell>
+                    <div className="d-flex align-items-center">
+                      <CIcon icon={cilUser} className="me-2" />
+                      <div>
+                        <div className="fw-semibold">{booking.userName}</div>
+                        <div className="small text-muted">{booking.userEmail}</div>
+                      </div>
+                    </div>
+                  </CTableDataCell>
+                  <CTableDataCell>
+                    <div className="d-flex align-items-center">
+                      <CIcon icon={cilLocationPin} className="me-2" />
+                      <div>
+                        <div className="small">{booking.from}</div>
+                        <div className="small text-muted">→ {booking.to}</div>
+                      </div>
+                    </div>
+                  </CTableDataCell>
+                  <CTableDataCell>
+                    <div className="d-flex align-items-center">
+                      <CIcon icon={cilMoney} className="me-2" />
+                      <div>
+                        <div className="fw-semibold">{formatCurrency(booking.totalAmount)}</div>
+                        {booking.refundAmount > 0 && (
+                          <div className="small text-danger">
+                            Refund: {formatCurrency(booking.refundAmount)}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </CTableDataCell>
+                  <CTableDataCell>
+                    <div className="d-flex flex-column gap-1">
+                      <CBadge color={getStatusBadgeColor(booking.status)}>
+                        {booking.status?.toUpperCase() || 'N/A'}
+                      </CBadge>
+                      <CBadge color={getRefundStatusBadgeColor(booking.refundStatus)}>
+                        Refund: {booking.refundStatus?.toUpperCase() || 'N/A'}
+                      </CBadge>
+                    </div>
+                  </CTableDataCell>
+                  <CTableDataCell>
+                    <CBadge color={getGatewayBadgeColor(booking.gateway)}>
+                      {booking.gateway?.toUpperCase() || 'N/A'}
+                    </CBadge>
+                  </CTableDataCell>
+                  <CTableDataCell>
+                    <div className="d-flex align-items-center">
+                      <CIcon icon={cilCalendar} className="me-2" />
+                      <div className="small">{formatDate(booking.bookedAt)}</div>
+                    </div>
+                  </CTableDataCell>
+                  <CTableDataCell className="text-end">
+                    <CDropdown
+                      visible={showDropdown === booking._id}
+                      onVisibleChange={(visible) => handleDropdown(visible, booking._id)}
+                    >
+                      <CDropdownToggle color="light" caret={false}>
+                        <CIcon icon={cilOptions} size="lg" />
+                      </CDropdownToggle>
+                      <CDropdownMenu>
+                        <CDropdownItem onClick={() => handleAction('view', booking)}>View Details</CDropdownItem>
+                        <CDropdownItem onClick={() => handleAction('edit', booking)}>Edit Booking</CDropdownItem>
+                        <CDropdownItem onClick={() => handleAction('delete', booking)}>Delete Booking</CDropdownItem>
+                      </CDropdownMenu>
+                    </CDropdown>
+                  </CTableDataCell>
+                </CTableRow>
+              ))}
+            </CTableBody>
+          </CTable>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="d-flex justify-content-between align-items-center mt-3">
+              <div className="text-muted">
+                Showing {indexOfFirstBooking + 1} to {Math.min(indexOfLastBooking, filteredBookings.length)} of {filteredBookings.length} bookings
+              </div>
+              <CPagination aria-label="Bookings pagination">
+                <CPaginationItem 
+                  aria-label="Previous" 
+                  disabled={currentPage === 1}
+                  onClick={() => paginate(currentPage - 1)}
+                >
+                  <CIcon icon={cilChevronLeft} />
+                </CPaginationItem>
+                
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                  <CPaginationItem
+                    key={page}
+                    active={page === currentPage}
+                    onClick={() => paginate(page)}
+                  >
+                    {page}
+                  </CPaginationItem>
+                ))}
+                
+                <CPaginationItem 
+                  aria-label="Next" 
+                  disabled={currentPage === totalPages}
+                  onClick={() => paginate(currentPage + 1)}
+                >
+                  <CIcon icon={cilChevronRight} />
+                </CPaginationItem>
+              </CPagination>
+            </div>
+          )}
+        </CCardBody>
+      </CCard>
+
+      {/* Booking Detail Modal */}
+      <CModal 
+        visible={showModal} 
+        onClose={closeModal}
+        size="lg"
+        scrollable
+      >
+        <CModalHeader onClose={closeModal}>
+          <CModalTitle>
+            <CIcon icon={cilDescription} className="me-2" />
+            Booking Details
+          </CModalTitle>
+        </CModalHeader>
+        <CModalBody>
+          {selectedBooking && (
+            <CListGroup flush>
+              <CListGroupItem>
+                <CRow>
+                  <CCol md={6}>
+                    <strong>Ticket ID:</strong>
+                  </CCol>
+                  <CCol md={6}>
+                    <CBadge color="primary">{selectedBooking.ticketId}</CBadge>
+                  </CCol>
+                </CRow>
+              </CListGroupItem>
+              
+              <CListGroupItem>
+                <CRow>
+                  <CCol md={6}>
+                    <strong>Transaction ID:</strong>
+                  </CCol>
+                  <CCol md={6}>
+                    <CBadge color="info">{selectedBooking.transactionId}</CBadge>
+                  </CCol>
+                </CRow>
+              </CListGroupItem>
+              
+              <CListGroupItem>
+                <CRow>
+                  <CCol md={6}>
+                    <strong>User Information:</strong>
+                  </CCol>
+                  <CCol md={6}>
+                    <div>{selectedBooking.userName}</div>
+                    <div className="text-muted">{selectedBooking.userEmail}</div>
+                    <div className="text-muted">{selectedBooking.userPhone}</div>
+                  </CCol>
+                </CRow>
+              </CListGroupItem>
+              
+              <CListGroupItem>
+                <CRow>
+                  <CCol md={6}>
+                    <strong>Bus Information:</strong>
+                  </CCol>
+                  <CCol md={6}>
+                    <div>{selectedBooking.busName}</div>
+                    <div className="text-muted">Bus No: {selectedBooking.busNo}</div>
+                  </CCol>
+                </CRow>
+              </CListGroupItem>
+              
+              <CListGroupItem>
+                <CRow>
+                  <CCol md={6}>
+                    <strong>Route:</strong>
+                  </CCol>
+                  <CCol md={6}>
+                    <div>{selectedBooking.from} → {selectedBooking.to}</div>
+                    <div className="text-muted">
+                      {selectedBooking.departureTime} - {selectedBooking.arrivalTime}
+                    </div>
+                    <div className="text-muted">Date: {selectedBooking.date}</div>
+                  </CCol>
+                </CRow>
+              </CListGroupItem>
+              
+              <CListGroupItem>
+                <CRow>
+                  <CCol md={6}>
+                    <strong>Seats:</strong>
+                  </CCol>
+                  <CCol md={6}>
+                    <CBadge color="success">{selectedBooking.seats?.join(', ')}</CBadge>
+                  </CCol>
+                </CRow>
+              </CListGroupItem>
+              
+              <CListGroupItem>
+                <CRow>
+                  <CCol md={6}>
+                    <strong>Amount:</strong>
+                  </CCol>
+                  <CCol md={6}>
+                    <div className="fw-bold">{formatCurrency(selectedBooking.totalAmount)}</div>
+                    {selectedBooking.refundAmount > 0 && (
+                      <div className="text-danger">
+                        Refund: {formatCurrency(selectedBooking.refundAmount)}
+                      </div>
+                    )}
+                  </CCol>
+                </CRow>
+              </CListGroupItem>
+              
+              <CListGroupItem>
+                <CRow>
+                  <CCol md={6}>
+                    <strong>Status:</strong>
+                  </CCol>
+                  <CCol md={6}>
+                    <CBadge color={getStatusBadgeColor(selectedBooking.status)}>
+                      {selectedBooking.status?.toUpperCase()}
+                    </CBadge>
+                  </CCol>
+                </CRow>
+              </CListGroupItem>
+              
+              <CListGroupItem>
+                <CRow>
+                  <CCol md={6}>
+                    <strong>Refund Status:</strong>
+                  </CCol>
+                  <CCol md={6}>
+                    <CBadge color={getRefundStatusBadgeColor(selectedBooking.refundStatus)}>
+                      {selectedBooking.refundStatus?.toUpperCase()}
+                    </CBadge>
+                  </CCol>
+                </CRow>
+              </CListGroupItem>
+              
+              <CListGroupItem>
+                <CRow>
+                  <CCol md={6}>
+                    <strong>Payment Gateway:</strong>
+                  </CCol>
+                  <CCol md={6}>
+                    <CBadge color={getGatewayBadgeColor(selectedBooking.gateway)}>
+                      {selectedBooking.gateway?.toUpperCase()}
+                    </CBadge>
+                  </CCol>
+                </CRow>
+              </CListGroupItem>
+              
+              <CListGroupItem>
+                <CRow>
+                  <CCol md={6}>
+                    <strong>Booked At:</strong>
+                  </CCol>
+                  <CCol md={6}>
+                    {formatDate(selectedBooking.bookedAt)}
+                  </CCol>
+                </CRow>
+              </CListGroupItem>
+              
+              <CListGroupItem>
+                <CRow>
+                  <CCol md={6}>
+                    <strong>Created At:</strong>
+                  </CCol>
+                  <CCol md={6}>
+                    {formatDate(selectedBooking.createdAt)}
+                  </CCol>
+                </CRow>
+              </CListGroupItem>
+              
+              <CListGroupItem>
+                <CRow>
+                  <CCol md={6}>
+                    <strong>Updated At:</strong>
+                  </CCol>
+                  <CCol md={6}>
+                    {formatDate(selectedBooking.updatedAt)}
+                  </CCol>
+                </CRow>
+              </CListGroupItem>
+            </CListGroup>
+          )}
+        </CModalBody>
+        <CModalFooter>
+          <CButton color="secondary" onClick={closeModal}>
+            Close
+          </CButton>
+          <CButton 
+            color="primary" 
+            onClick={() => {
+              closeModal();
+              handleAction('edit', selectedBooking);
+            }}
+          >
+            Edit Booking
+          </CButton>
+        </CModalFooter>
+      </CModal>
+    </>
+  );
+};
+
+export default Bookings; 
