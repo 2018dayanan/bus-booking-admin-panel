@@ -70,7 +70,7 @@ const UserDetail = () => {
           setLoading(false);
         }
       } catch (apiError) {
-        console.warn('API call failed:', apiError.message);
+        console.error('API call failed:', apiError.message);
         if (isMounted) {
           setError('Failed to fetch user details. Please try again.');
           setLoading(false);
