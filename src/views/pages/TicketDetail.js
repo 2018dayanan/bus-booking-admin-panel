@@ -25,7 +25,7 @@ import {
   cilMoney,
   cilStar,
   cilPeople,
-  cilEdit,
+  cilPencil,
   cilTrash,
 } from '@coreui/icons'
 import ticketService from '../../services/ticketService'
@@ -141,7 +141,7 @@ const TicketDetail = () => {
             className="me-2"
             onClick={() => alert('Edit functionality coming soon')}
           >
-            <CIcon icon={cilEdit} className="me-2" />
+            <CIcon icon={cilPencil} className="me-2" />
             Edit
           </CButton>
           <CButton 

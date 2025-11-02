@@ -44,8 +44,6 @@ const AddBooking = () => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [searchTerm, setSearchTerm] = useState('')
-  const [selectedTicket, setSelectedTicket] = useState(null)
-  const [showBookingModal, setShowBookingModal] = useState(false)
 
   // Get today's date in YYYY-MM-DD format
   const getTodayDate = () => {
@@ -165,23 +163,8 @@ const AddBooking = () => {
 
   // Handle book ticket
   const handleBookTicket = (ticket) => {
-    setSelectedTicket(ticket)
-    setShowBookingModal(true)
-  }
-
-  // Confirm booking
-  const confirmBooking = () => {
-    if (selectedTicket) {
-      // Navigate to booking creation page with ticket data
-      navigate('/admin/bookings/create', { 
-        state: { 
-          ticketData: selectedTicket,
-          fromAddBooking: true 
-        } 
-      })
-    }
-    setShowBookingModal(false)
-    setSelectedTicket(null)
+    // Navigate to BookSeats page, passing ticket data
+    navigate('/bookings/seats', { state: { ticketData: ticket } })
   }
 
   // Format date for display
@@ -388,49 +371,6 @@ const AddBooking = () => {
           )}
         </CCardBody>
       </CCard>
-
-      {/* Booking Confirmation Modal */}
-      <CModal
-        visible={showBookingModal}
-        onClose={() => setShowBookingModal(false)}
-        size="lg"
-      >
-        <CModalHeader onClose={() => setShowBookingModal(false)}>
-          <CModalTitle>Confirm Booking</CModalTitle>
-        </CModalHeader>
-        <CModalBody>
-          {selectedTicket && (
-            <div>
-              <h5>Ticket Details</h5>
-              <CRow>
-                <CCol md={6}>
-                  <p><strong>Operator:</strong> {selectedTicket.operatorName}</p>
-                  <p><strong>Bus:</strong> {selectedTicket.bussName} ({selectedTicket.bussNo})</p>
-                  <p><strong>Route:</strong> {selectedTicket.route?.from || selectedTicket.from} → {selectedTicket.route?.to || selectedTicket.to}</p>
-                  <p><strong>Vehicle Type:</strong> {selectedTicket.vehicleType}</p>
-                </CCol>
-                <CCol md={6}>
-                  <p><strong>Date:</strong> {formatDate(selectedTicket.date || selectedTicket.departureDate || selectedTicket.travelDate)}</p>
-                  <p><strong>Time:</strong> {selectedTicket.departureTime || selectedTicket.time || 'N/A'} - {selectedTicket.arrivalTime || 'N/A'}</p>
-                  <p><strong>Price:</strong> ৳{selectedTicket.price || selectedTicket.fare}</p>
-                  <p><strong>Total Seats:</strong> {selectedTicket.totalSeats}</p>
-                </CCol>
-              </CRow>
-              <CAlert color="info">
-                You will be redirected to the booking creation page where you can enter passenger details and complete the booking.
-              </CAlert>
-            </div>
-          )}
-        </CModalBody>
-        <CModalFooter>
-          <CButton color="secondary" onClick={() => setShowBookingModal(false)}>
-            Cancel
-          </CButton>
-          <CButton color="primary" onClick={confirmBooking}>
-            Proceed to Booking
-          </CButton>
-        </CModalFooter>
-      </CModal>
     </div>
   )
 }

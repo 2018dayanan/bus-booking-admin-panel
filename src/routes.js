@@ -13,6 +13,7 @@ const UserDetail = React.lazy(() => import('./views/pages/UserDetail'))
 const AddUser = React.lazy(() => import('./views/pages/AddUser'))
 const Colors = React.lazy(() => import('./views/theme/colors/Colors'))
 const Typography = React.lazy(() => import('./views/theme/typography/Typography'))
+const BookSeats = React.lazy(() => import('./views/pages/BookSeats'))
 
 // Base
 const Accordion = React.lazy(() => import('./views/base/accordion/Accordion'))
@@ -74,6 +75,7 @@ const routes = [
   { path: '/admin/tickets/:id', name: 'Ticket Detail', element: TicketDetail },
   { path: '/bookings', name: 'Bookings', element: Bookings },
   { path: '/bookings/add', name: 'Add Booking', element: AddBooking },
+  { path: '/bookings/seats', name: 'Book Seats', element: BookSeats },
   { path: '/admin/theme', name: 'Theme', element: Colors, exact: true },
   { path: '/admin/theme/colors', name: 'Colors', element: Colors },
   { path: '/admin/theme/typography', name: 'Typography', element: Typography },

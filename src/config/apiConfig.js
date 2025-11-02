@@ -2,17 +2,19 @@
 // Centralized configuration for all API endpoints
 
 // Environment-based configuration
-const ENV = process.env.NODE_ENV || 'development';
+const ENV = process.env.NODE_ENV || 'development'
 
 // Base URLs for different environments
 const BASE_URLS = {
-  development: 'http://192.168.1.78:7000/api',
-  staging: 'http://staging-api.example.com/api',
-  production: 'https://api.example.com/api',
-};
+  // development: 'http://192.168.39.125:7000/api',
+  // 34.229.93.103
+  development: 'http://34.229.93.103/api',
+  staging: 'http://34.229.93.103/api',
+  production: 'http://34.229.93.103/api',
+}
 
 // Base URL for all API calls
-export const API_BASE_URL = BASE_URLS[ENV] || BASE_URLS.development;
+export const API_BASE_URL = BASE_URLS[ENV] || BASE_URLS.development
 
 // API Endpoints
 export const API_ENDPOINTS = {
@@ -21,14 +23,14 @@ export const API_ENDPOINTS = {
   REGISTER: '/admin/register',
   LOGOUT: '/admin/logout',
   VERIFY_TOKEN: '/verify-token',
-  
+
   // User endpoints
   GET_ALL_USERS: '/admin/getAllUsers',
   CREATE_USER: '/admin/createUser',
   GET_USER_BY_ID: '/admin/users',
   UPDATE_USER: '/admin/updateUser',
   DELETE_USER: '/admin/deleteUser',
-  
+
   // Ticket endpoints
   GET_ALL_TICKETS: '/admin/getAllTicket',
   CREATE_TICKET: '/ticket/createTicket',
@@ -38,7 +40,7 @@ export const API_ENDPOINTS = {
   GET_TICKETS_BY_OPERATOR: '/admin/tickets/operator',
   GET_TICKETS_BY_DATE_RANGE: '/admin/tickets/date-range',
   GET_TICKETS_BY_ROUTE: '/admin/tickets/route',
-  
+
   // Booking endpoints
   GET_ALL_BOOKINGS: '/admin/getAllBookings',
   CREATE_BOOKING: '/admin/createBooking',
@@ -48,7 +50,7 @@ export const API_ENDPOINTS = {
   GET_BOOKINGS_BY_USER: '/admin/bookings/user',
   GET_BOOKINGS_BY_STATUS: '/admin/bookings/status',
   GET_BOOKINGS_BY_DATE_RANGE: '/admin/bookings/date-range',
-};
+}
 
 // API Configuration
 export const API_CONFIG = {
@@ -58,7 +60,7 @@ export const API_CONFIG = {
   HEADERS: {
     'Content-Type': 'application/json',
   },
-};
+}
 
 // HTTP Status Codes
 export const HTTP_STATUS = {
@@ -69,7 +71,7 @@ export const HTTP_STATUS = {
   FORBIDDEN: 403,
   NOT_FOUND: 404,
   INTERNAL_SERVER_ERROR: 500,
-};
+}
 
 // Error Messages
 export const ERROR_MESSAGES = {
@@ -79,7 +81,7 @@ export const ERROR_MESSAGES = {
   NOT_FOUND: 'The requested resource was not found.',
   SERVER_ERROR: 'Server error. Please try again later.',
   VALIDATION_ERROR: 'Please check your input and try again.',
-};
+}
 
 // Vite Proxy Configuration (for development)
 export const VITE_PROXY_CONFIG = {
@@ -87,20 +89,20 @@ export const VITE_PROXY_CONFIG = {
   changeOrigin: true,
   secure: false,
   rewrite: (path) => path.replace(/^\/api/, '/api'),
-};
+}
 
 // Helper function to get full API URL
 export const getApiUrl = (endpoint) => {
-  return `${API_BASE_URL}${endpoint}`;
-};
+  return `${API_BASE_URL}${endpoint}`
+}
 
 // Helper function to get auth headers
 export const getAuthHeaders = (token) => {
   return {
     'Content-Type': 'application/json',
-    'Authorization': `Bearer ${token}`,
-  };
-};
+    Authorization: `Bearer ${token}`,
+  }
+}
 
 // Environment info
 export const ENV_INFO = {
@@ -108,7 +110,7 @@ export const ENV_INFO = {
   isDevelopment: ENV === 'development',
   isProduction: ENV === 'production',
   isStaging: ENV === 'staging',
-};
+}
 
 export default {
   API_BASE_URL,
@@ -120,4 +122,4 @@ export default {
   ENV_INFO,
   getApiUrl,
   getAuthHeaders,
-}; 
+}
