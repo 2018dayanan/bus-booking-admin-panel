@@ -24,7 +24,7 @@ import {
   cilAccountLogout,
 } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
-import authService from '../../services/authService'
+import authService from 'features/auth/services/authService'
 
 import avatar8 from './../../assets/images/avatars/8.jpg'
 

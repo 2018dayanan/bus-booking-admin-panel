@@ -56,7 +56,7 @@ import avatar6 from 'src/assets/images/avatars/6.jpg'
 import WidgetsBrand from '../widgets/WidgetsBrand'
 import WidgetsDropdown from '../widgets/WidgetsDropdown'
 import MainChart from './MainChart'
-import authService from '../../services/authService'
+import authService from 'features/auth/services/authService'
 
 const Dashboard = () => {
   const dispatch = useDispatch()

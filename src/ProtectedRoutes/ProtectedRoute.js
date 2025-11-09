@@ -1,11 +1,10 @@
-import React from 'react'
 import { Navigate, useLocation } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { CSpinner } from '@coreui/react'
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, loading } = useSelector((state) => state.auth)
-  const location = useLocation()
+  const location = useLocation();
 
   const token = localStorage.getItem('authToken')
   console.log('ProtectedRoute: isAuthenticated', isAuthenticated)

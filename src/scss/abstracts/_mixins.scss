@@ -1,0 +1,12 @@
+@forward "@coreui/coreui/scss/mixins/breakpoints";
+@forward "@coreui/coreui/scss/mixins/transition";
+@forward "@coreui/coreui/scss/mixins/color-mode";
+
+// Custom mixins
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+// Add any other custom mixins here

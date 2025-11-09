@@ -1,0 +1,5 @@
+// Import CoreUI styles
+@forward "@coreui/coreui/scss/coreui" with (
+  $enable-deprecation-messages: false
+);
+@forward "@coreui/chartjs/scss/coreui-chartjs";

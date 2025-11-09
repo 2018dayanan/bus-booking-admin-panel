@@ -26,9 +26,9 @@ import {
   cilAccountLogout,
 } from '@coreui/icons'
 
-import { AppBreadcrumb } from './index'
-import { AppHeaderDropdown } from './header/index'
-import authService from '../services/authService'
+import { AppBreadcrumb } from '../../components/index'
+import { AppHeaderDropdown } from '../../components/header/index'
+import authService from 'features/auth/services/authService'
 
 const AppHeader = () => {
   const headerRef = useRef()

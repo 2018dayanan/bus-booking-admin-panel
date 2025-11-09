@@ -4,8 +4,8 @@ import path from 'node:path'
 import autoprefixer from 'autoprefixer'
 
 export default defineConfig(() => {
-  return {
-    base: './',
+    return {
+      base: './',
     build: {
       outDir: 'build',
     },
@@ -31,12 +31,24 @@ export default defineConfig(() => {
     },
     plugins: [react()],
     resolve: {
-      alias: [
-        {
-          find: 'src/',
-          replacement: `${path.resolve(__dirname, 'src')}/`,
-        },
-      ],
+      alias: {
+        // root-style aliases (no @ prefix)
+        'src': path.resolve(__dirname, './src'),
+        'components': path.resolve(__dirname, './src/components'),
+        'views': path.resolve(__dirname, './src/views'),
+        'layout': path.resolve(__dirname, './src/layout'),
+        'features': path.resolve(__dirname, './src/features'),
+        'common': path.resolve(__dirname, './src/common'),
+        'core': path.resolve(__dirname, './src/core'),
+        'assets': path.resolve(__dirname, './src/assets'),
+        // keep @ aliases for backward-compatibility
+        '@': path.resolve(__dirname, './src'),
+        '@features': path.resolve(__dirname, './src/features'),
+        '@common': path.resolve(__dirname, './src/common'),
+        '@core': path.resolve(__dirname, './src/core'),
+        '@layout': path.resolve(__dirname, './src/layout'),
+        '@assets': path.resolve(__dirname, './src/assets')
+      },
       extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json', '.scss'],
     },
     server: {

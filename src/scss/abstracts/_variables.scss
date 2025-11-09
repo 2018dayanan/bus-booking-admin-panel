@@ -1,0 +1,43 @@
+@forward "@coreui/coreui/scss/variables";
+
+// Provide a fallback prefix in case CoreUI doesn't export one in this setup.
+// CoreUI normally defines its own $prefix; this will only apply if it's not set.
+$prefix: 'cui-' !default;
+
+// Custom spacing variables
+$spacing-base: 1rem !default;
+$spacing-large: 1.5rem !default;
+$spacing-small: 0.5rem !default;
+
+// Theme colors
+$primary: var(--cui-primary) !default;
+$secondary: var(--cui-secondary) !default;
+$success: var(--cui-success) !default;
+$info: var(--cui-info) !default;
+$warning: var(--cui-warning) !default;
+$danger: var(--cui-danger) !default;
+
+// Layout
+$header-height: 4rem !default;
+$footer-height: 3rem !default;
+
+// Colors
+$color-primary: var(--cui-primary);
+$color-secondary: var(--cui-secondary);
+$color-success: var(--cui-success);
+$color-danger: var(--cui-danger);
+
+// Spacing
+$spacing-base: 1rem;
+$spacing-large: 1.5rem;
+$spacing-small: 0.5rem;
+
+// Breakpoints (using CoreUI's breakpoints)
+$breakpoints: (
+  xs: 0,
+  sm: 576px,
+  md: 768px,
+  lg: 992px,
+  xl: 1200px,
+  xxl: 1400px
+);
