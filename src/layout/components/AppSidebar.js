@@ -5,24 +5,24 @@ import { useNavigate } from 'react-router-dom'
 import {
   CCloseButton,
   CSidebar,
-  CSidebarBrand,
+  // CSidebarBrand,
   CSidebarFooter,
   CSidebarHeader,
   CSidebarToggler,
   CSidebarNav,
-  CNavItem,
-  CNavTitle,
-  CNavGroup,
+  // CNavItem,
+  // CNavTitle,
+  // CNavGroup,
 } from '@coreui/react'
-import CIcon from '@coreui/icons-react'
+// import CIcon from '@coreui/icons-react'
 
-import { AppSidebarNav } from './AppSidebarNav'
+import { AppSidebarNav } from '../../components/AppSidebarNav'
 
 // import { logo } from 'src/assets/brand/logo'
 // import { sygnet } from 'src/assets/brand/sygnet'
 
-import navigation from '../_nav'
-import authService from '../services/authService'
+import navigation from '../../common/components/_nav'
+import authService from 'features/auth/services/authService'
 
 import SimpleBar from 'simplebar-react'
 

@@ -1,6 +1,6 @@
 // API service for making authenticated requests to protected endpoints
 
-import authService from './authService'
+import authService from 'features/auth/services/authService'
 
 // Use local proxy to avoid CORS issues
 const API_BASE_URL = '/api';

@@ -1,4 +1,5 @@
-import { API_BASE_URL, API_ENDPOINTS, ERROR_MESSAGES } from '../config/apiConfig';
+
+import { API_BASE_URL,API_ENDPOINTS } from '../../../config/apiConfig';
 
 const USE_MOCK_API = false;
 

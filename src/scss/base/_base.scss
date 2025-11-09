@@ -1,0 +1,12 @@
+@use "@coreui/coreui/scss/mixins/color-mode" as *;
+
+// Reset and base styles
+body {
+  background-color: var(--cui-tertiary-bg);
+}
+
+@include color-mode(dark) {
+  body {
+    background-color: var(--cui-dark-bg-subtle);
+  }
+}

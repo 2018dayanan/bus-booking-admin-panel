@@ -1,0 +1,29 @@
+@use "@coreui/coreui/scss/mixins/color-mode" as *;
+@use "@coreui/coreui/scss/mixins/transition" as *;
+
+// Layout-specific styles
+.wrapper {
+  width: 100%;
+  padding-inline: var(--cui-sidebar-occupy-start, 0) var(--cui-sidebar-occupy-end, 0);
+  will-change: auto;
+  @include transition(padding .15s);
+}
+
+.header {
+  &.container-fluid,
+  > .container-fluid {
+    min-height: calc(4rem + 1px);
+  }
+  
+  > .container-fluid + .container-fluid {
+    min-height: 3rem;
+  }
+}
+
+.footer {
+  min-height: calc(3rem + 1px);
+  
+  @include color-mode(dark) {
+    --cui-footer-bg: var(--cui-body-bg);
+  }
+}

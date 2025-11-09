@@ -18,8 +18,8 @@ import {
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { cilLockLocked, cilUser } from '@coreui/icons'
-import authService from '../../../services/authService'
-import LoginDebug from '../../../components/LoginDebug'
+import authService from 'features/auth/services/authService'
+import LoginDebug from 'features/auth/components/LoginDebug'
 
 const Login = () => {
   const [credentials, setCredentials] = useState({
@@ -217,7 +217,7 @@ const Login = () => {
                       Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
                       tempor incididunt ut labore et dolore magna aliqua.
                     </p>
-                    <Link to="/register">
+                    <Link to="/admin/register">
                       <CButton color="primary" className="mt-3" active tabIndex={-1}>
                         Register Now!
                       </CButton>

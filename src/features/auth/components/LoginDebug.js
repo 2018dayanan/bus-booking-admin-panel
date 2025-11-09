@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import authService from '../services/authService'
+import authService from 'features/auth/services/authService'
 
 const LoginDebug = () => {
   const [testResult, setTestResult] = useState('')
